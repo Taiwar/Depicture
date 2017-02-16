@@ -1,10 +1,10 @@
-package net.muellersites.kritzel;
+package net.muellersites.depicture;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import net.muellersites.kritzel.Views.DrawView;
+import net.muellersites.depicture.Views.DrawView;
 
 public class Scribbler extends Activity {
     DrawView drawView;

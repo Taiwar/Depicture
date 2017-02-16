@@ -1,4 +1,4 @@
-package net.muellersites.kritzel.Objects;
+package net.muellersites.depicture.Objects;
 
 public class Point {
     private float x, y;

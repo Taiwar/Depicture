@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.muellersites.kritzel">
+    package="net.muellersites.depicture">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".MainActivity"
+            android:name="net.muellersites.depicture.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
@@ -22,12 +22,12 @@
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name="net.muellersites.depicture.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".Scribbler"
+            android:name="net.muellersites.depicture.Scribbler"
             android:label="@string/title_activity_scribbler" />
-        <activity android:name=".AboutActivity" />
+        <activity android:name="net.muellersites.depicture.AboutActivity" />
     </application>
 
 </manifest>

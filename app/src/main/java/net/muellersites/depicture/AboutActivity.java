@@ -1,4 +1,4 @@
-package net.muellersites.kritzel;
+package net.muellersites.depicture;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

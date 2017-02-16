@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "net.muellersites.kritzel"
+        applicationId "net.muellersites.depicture"
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1

@@ -3,7 +3,7 @@
 
 extern "C"
 jstring
-Java_net_muellersites_kritzel_MainActivity_stringFromJNI(
+Java_net_muellersites_depicture_MainActivity_stringFromJNI(
         JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";

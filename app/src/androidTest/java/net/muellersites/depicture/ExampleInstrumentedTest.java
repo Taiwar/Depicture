@@ -1,4 +1,4 @@
-package net.muellersites.kritzel;
+package net.muellersites.depicture;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("net.muellersites.kritzel", appContext.getPackageName());
+        assertEquals("net.muellersites.depicture", appContext.getPackageName());
     }
 }

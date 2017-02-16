@@ -5,8 +5,8 @@
         android:title="@string/pref_about_title">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="net.muellersites.kritzel"
-            android:targetClass="net.muellersites.kritzel.AboutActivity" />
+            android:targetPackage="net.muellersites.depicture"
+            android:targetClass="net.muellersites.depicture.AboutActivity" />
     </Preference>
 
 </PreferenceScreen>

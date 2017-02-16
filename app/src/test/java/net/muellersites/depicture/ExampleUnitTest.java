@@ -1,4 +1,4 @@
-package net.muellersites.kritzel;
+package net.muellersites.depicture;
 
 import org.junit.Test;
 

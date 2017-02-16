@@ -1,4 +1,4 @@
-package net.muellersites.kritzel.Views;
+package net.muellersites.depicture.Views;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import net.muellersites.kritzel.Objects.Point;
+import net.muellersites.depicture.Objects.Point;
 
 public class DrawView extends View implements OnTouchListener {
     List<Point> points = new ArrayList<>();

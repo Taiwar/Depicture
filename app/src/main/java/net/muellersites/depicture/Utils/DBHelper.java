@@ -1,4 +1,4 @@
-package net.muellersites.kritzel.Utils;
+package net.muellersites.depicture.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import net.muellersites.kritzel.Objects.User;
+import net.muellersites.depicture.Objects.User;
 
 class DBHelper extends SQLiteOpenHelper {
 
