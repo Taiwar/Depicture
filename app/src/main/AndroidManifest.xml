@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.muellersites.depicture">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -12,22 +13,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name="net.muellersites.depicture.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="net.muellersites.depicture.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name="net.muellersites.depicture.Scribbler"
-            android:label="@string/title_activity_scribbler" />
-        <activity android:name="net.muellersites.depicture.AboutActivity" />
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login" />
+        <activity android:name=".AboutActivity" />
+        <activity
+            android:name=".DrawActivity"
+            android:label="@string/title_activity_draw"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

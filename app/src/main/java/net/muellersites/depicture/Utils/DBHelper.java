@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import net.muellersites.depicture.Objects.User;
 
-class DBHelper extends SQLiteOpenHelper {
+public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "MTools";
     private static final String TABLE_NAME = "Users";
@@ -27,7 +27,7 @@ class DBHelper extends SQLiteOpenHelper {
                     COLUMN_PASSWORD + " TEXT, " +
                     COLUMN_TOKEN + " TEXT);";
 
-    DBHelper(Context context) {
+    public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -42,7 +42,7 @@ class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    void insertUser(User user){
+    public void insertUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("id", user.getId());
@@ -54,7 +54,7 @@ class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    void updateUser(User user){
+    public void updateUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("id", user.getId());
@@ -66,10 +66,10 @@ class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    User getUser() {
+    public User getUser() {
         User user = new User();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM User";
+        String query = "SELECT * FROM Users";
         Cursor cursor = db.rawQuery(query, null);
         if( cursor != null && cursor.moveToFirst() ){
             user.setId(cursor.getInt(0));
@@ -85,7 +85,7 @@ class DBHelper extends SQLiteOpenHelper {
         return user;
     }
 
-    void clearUsers(){
+    public void clearUsers(){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM Users");
         db.close();

@@ -20,10 +20,4 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:id="@+id/nav_username_view" />
 
-    <TextView
-        android:id="@+id/nav_email_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_reminder" />
-
 </LinearLayout>

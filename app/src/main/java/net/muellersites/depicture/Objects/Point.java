@@ -1,21 +1,19 @@
 package net.muellersites.depicture.Objects;
 
 public class Point {
-    private float x, y;
+    public float x, y;
+    public float dx, dy;
 
-    public float getX() {
-        return x;
+    public Point() {
     }
 
-    public void setX(float x) {
+    public Point(float x, float y) {
         this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
         this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return x + ", " + y;
     }
 }
