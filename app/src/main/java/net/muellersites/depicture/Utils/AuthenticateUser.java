@@ -2,6 +2,7 @@ package net.muellersites.depicture.Utils;
 
 import android.util.Log;
 
+import net.muellersites.depicture.Objects.LoginData;
 import net.muellersites.depicture.Objects.User;
 
 import org.json.JSONException;
@@ -10,12 +11,13 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class LoginUser {
+public class AuthenticateUser {
 
     public static User main(LoginData loginData, String server) throws IOException {
         User result_user = new User();
@@ -41,26 +43,24 @@ public class LoginUser {
             dataOut.flush();
             dataOut.close();
 
-            BufferedReader in = null;
+            InputStream in = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
             try {
                 String line;
-                in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while ((line = in.readLine()) != null) {
+                while ((line = reader.readLine()) != null) {
                     result += line;
                 }
             }catch (Exception exc){
                 Log.e("Dev", "Exception during read: " + exc);
                 throw exc;
             } finally {
-                if (in != null) {
-                    try {
-                        Log.d("Dev", "finished reading, closing stream...");
-                        in.close();
-                    } catch (IOException ex) {
-                        Log.e("Dev", "IOException while closing in: ");
-                        ex.printStackTrace();
-                    }
-
+                try {
+                    Log.d("Dev", "finished reading, closing stream...");
+                    in.close();
+                } catch (IOException ex) {
+                    Log.e("Dev", "IOException while closing in: " + ex);
+                    ex.printStackTrace();
                 }
             }
 
@@ -68,15 +68,11 @@ public class LoginUser {
 
             try {
                 JSONObject json = new JSONObject(result);
-                if (json.get("error") == null) {
-                    result_user.setToken((String) json.get("token"));
-                    Log.d("Dev", "Logged in without error!");
-                } else {
-                    Log.d("Dev", "Logged in with error:");
-                    throw new IOException((String) json.get("error"));
-                }
+                result_user.setName(loginData.getName());
+                result_user.setPassword(loginData.getPassword());
+                result_user.setToken((String) json.get("token"));
             } catch (JSONException ex) {
-                Log.e("Dev", "Caught JSONException");
+                Log.e("Dev", "Caught JSONException" + ex);
                 ex.printStackTrace();
             }
 

@@ -3,9 +3,7 @@ package net.muellersites.depicture;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,13 +28,12 @@ import android.widget.Toast;
 
 import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Utils.DBHelper;
-import net.muellersites.depicture.Utils.LoginData;
-import net.muellersites.depicture.Utils.LoginUser;
+import net.muellersites.depicture.Objects.LoginData;
+import net.muellersites.depicture.Utils.AuthenticateUser;
+import net.muellersites.depicture.Utils.GetUserData;
 
 import java.io.IOException;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 
 public class LoginActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -49,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-    private String server = "https://muellersites.net/api/token-auth";
+    private String server = "https://muellersites.net/api/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,7 +210,9 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
         protected Boolean doInBackground(Void... params) {
 
             try {
-                User user = LoginUser.main(new LoginData(mName, mPassword), server);
+                User user = AuthenticateUser.main(new LoginData(mName, mPassword), server + "token-auth/");
+                Log.d("Dev", "Authenticated user: " + user.getName());
+                user = GetUserData.main(user, server + "get-user/");
                 DBHelper dbHelper = new DBHelper(getApplicationContext());
                 if(dbHelper.getUser().getName().equals("FAILURE")){
                     dbHelper.insertUser(user);

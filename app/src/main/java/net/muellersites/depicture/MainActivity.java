@@ -112,8 +112,9 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else if (id == R.id.nav_logout){
             Log.d("Dev", "Dummy logout function");
+            handleLogout(navigationView, getApplicationContext());
             /*try{
-                Boolean successfulLogout = new LogoutTask(this, "https://muellersites.net/api/token-auth").execute(user).get();
+                Boolean successfulLogout = new LogoutTask(this, server).execute(user).get();
                 if(successfulLogout){
                     handleLogout(navigationView, getApplicationContext());
                     GridLayout onlineGrid = (GridLayout) findViewById(R.id.main_online_grid);

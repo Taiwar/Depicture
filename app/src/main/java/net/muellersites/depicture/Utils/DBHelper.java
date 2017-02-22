@@ -10,7 +10,7 @@ import net.muellersites.depicture.Objects.User;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "MTools";
+    private static final String DATABASE_NAME = "Depicture";
     private static final String TABLE_NAME = "Users";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";

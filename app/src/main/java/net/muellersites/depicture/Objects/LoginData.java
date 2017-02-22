@@ -1,4 +1,4 @@
-package net.muellersites.depicture.Utils;
+package net.muellersites.depicture.Objects;
 
 public class LoginData {
     private String Name;
@@ -22,7 +22,7 @@ public class LoginData {
         Name = name;
     }
 
-    String getPassword() {
+    public String getPassword() {
         return Password;
     }
 
