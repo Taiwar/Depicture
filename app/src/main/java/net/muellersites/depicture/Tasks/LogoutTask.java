@@ -22,11 +22,11 @@ public class LogoutTask extends AsyncTask<User, Void, Boolean> {
 
     private Exception exception;
     private Context context;
-    private String server;
+    private String server_url;
 
-    public LogoutTask(Context context, String server){
+    public LogoutTask(Context context, String server_url){
         this.context = context;
-        this.server = server;
+        this.server_url = server_url;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LogoutTask extends AsyncTask<User, Void, Boolean> {
         String result = "";
         HttpURLConnection connection = null;
         try{
-            URL url = new URL(server);
+            URL url = new URL(server_url);
             String data = "utoken=" + URLEncoder.encode(users[0].getToken(), "UTF-8");
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);

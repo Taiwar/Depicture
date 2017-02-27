@@ -3,7 +3,9 @@
     <color name="colorPrimary">#303030</color>
     <color name="colorPrimaryDark">#212121</color>
     <color name="colorAlertBox">#424242</color>
-    <color name="colorAccent">#ffb300</color>
-    <color name="colorAccentDark">#e99000</color>
+    <color name="colorAccent">#00b7ff</color>
+    <color name="colorAccentDark">#008dc4</color>
     <color name="textColorPrimary">#ffffff</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

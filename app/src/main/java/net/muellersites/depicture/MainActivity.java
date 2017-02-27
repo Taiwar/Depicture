@@ -1,11 +1,13 @@
 package net.muellersites.depicture;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,11 +17,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
+import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
+import net.muellersites.depicture.Tasks.CreateLobbyTask;
+import net.muellersites.depicture.Tasks.JoinLobbyTask;
 import net.muellersites.depicture.Utils.DBHelper;
+import net.muellersites.depicture.Views.DrawView;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,6 +40,9 @@ public class MainActivity extends AppCompatActivity
     private static DBHelper dbHelper;
     private NavigationView navigationView;
     private User user;
+    private Lobby lobby;
+    private Button startButton;
+    private String server = "https://muellersites.net/api/";
 
     static {
         System.loadLibrary("native-lib");
@@ -49,7 +65,7 @@ public class MainActivity extends AppCompatActivity
             requestPermissions(perms, permsRequestCode);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -58,15 +74,35 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        updateMainSync();
-
-        Button startButton = (Button) findViewById(R.id.new_game_btn);
+        startButton = (Button) findViewById(R.id.new_game_btn);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, DrawActivity.class));
+                try {
+                    lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(2000, TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    Log.d("Dev", "Error during CreateLobbyTask");
+                    e.printStackTrace();
+                    Snackbar snackbar = Snackbar
+                            .make(drawer, "Couldn't create a new lobby", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
+                }
+                if (lobby != null){
+                    startActivity(new Intent(MainActivity.this, LobbyActivity.class));
+                }
             }
         });
+
+        Button joinButton = (Button) findViewById(R.id.join_btn);
+        joinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openJoinDialog();
+            }
+        });
+
+        updateMainSync();
     }
 
     @Override
@@ -158,6 +194,41 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
+    private void openJoinDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.join_dialog);
+        dialog.setCancelable(false);
+        Button join = (Button) dialog.findViewById(R.id.form_join_button);
+
+        final EditText lobby_field = (EditText) dialog.findViewById(R.id.form_lobby_id);
+        final EditText username_field = (EditText) dialog.findViewById(R.id.form_lobby_username);
+        dialog.show();
+
+        join.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Integer lobby_id = Integer.parseInt(lobby_field.getText().toString());
+                String username = username_field.getText().toString();
+                Lobby lobby = new Lobby();
+                lobby.setId(lobby_id);
+                try {
+                    lobby = new JoinLobbyTask(server + "lobby/join/" + lobby_id).execute(username).get();
+                } catch (Exception e) {
+                    Log.d("Dev", "Error during JoinLobbyTask");
+                    e.printStackTrace();
+                    Snackbar snackbar = Snackbar
+                            .make(lobby_field.getRootView(), "Couldn't join the lobby", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
+                }
+                if (lobby != null){
+                    startActivity(new Intent(MainActivity.this, LobbyActivity.class));
+                }
+            }
+        });
+
+    }
+
     static void handleLogout(NavigationView navigationView, Context context){
         Menu nav_Menu = navigationView.getMenu();
         MenuItem login_item = nav_Menu.findItem(R.id.nav_login);
@@ -179,7 +250,6 @@ public class MainActivity extends AppCompatActivity
         MenuItem logout_item = nav_Menu.findItem(R.id.nav_logout);
         View headerView = navigationView.getHeaderView(0);
         TextView navUsernameView = (TextView) headerView.findViewById(R.id.nav_username_view);
-
         navUsernameView.setText(user.getName());
 
         login_item.setVisible(false);
@@ -191,8 +261,10 @@ public class MainActivity extends AppCompatActivity
 
         if(!user.getName().equals("FAILURE")){
             handleLogin(navigationView, user);
+            startButton.setVisibility(View.VISIBLE);
         }else{
             handleLogout(navigationView, getApplicationContext());
+            startButton.setVisibility(View.INVISIBLE);
         }
     }
 

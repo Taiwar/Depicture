@@ -36,6 +36,15 @@
         android:layout_marginTop="145dp">
 
         <Button
+            android:text="@string/join"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:id="@+id/join_btn"
+            style="@android:style/Widget.Material.Light.Button"
+            android:background="@drawable/ic_buttonandroid" />
+
+        <Button
             android:text="@string/new_game_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,14 +54,6 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/ic_buttonandroid" />
 
-        <Button
-            android:text="@string/beitreten"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="83dp"
-            android:id="@+id/join_btn"
-            style="@android:style/Widget.Material.Light.Button"
-            android:background="@drawable/ic_buttonandroid" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.muellersites.depicture">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -33,6 +33,11 @@
             android:name=".DrawActivity"
             android:label="@string/title_activity_draw"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LobbyActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_lobby"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

@@ -18,11 +18,11 @@ class UploadPicTask extends AsyncTask<User, Void, Void> {
     private Exception exception;
 
     private Context context;
-    private String syncServer;
+    private String upload_url;
 
-    UploadPicTask(Context context, String syncServer){
+    UploadPicTask(Context context, String upload_url){
         this.context = context;
-        this.syncServer = syncServer;
+        this.upload_url = upload_url;
     }
 
     protected Void doInBackground(User... users) {
@@ -33,8 +33,8 @@ class UploadPicTask extends AsyncTask<User, Void, Void> {
         HttpURLConnection connection = null;
 
         try{
-            url = new URL(syncServer + "save.php");
-            String data = "utoken=" + URLEncoder.encode(user.getToken(), "UTF-8") + "&uname=" + URLEncoder.encode(user.getName(), "UTF-8");
+            url = new URL(upload_url);
+            String data = "";
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);
