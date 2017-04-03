@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="net.muellersites.depicture">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -11,6 +12,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Depicture"
         android:supportsRtl="true"
+        tools:replace="android:label"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".MainActivity"
@@ -31,13 +33,14 @@
         <activity android:name=".AboutActivity" />
         <activity
             android:name=".DrawActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_draw"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".LobbyActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_lobby"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
     </application>
 
 </manifest>

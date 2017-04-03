@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
         }
     }
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mName;
         private final String mPassword;

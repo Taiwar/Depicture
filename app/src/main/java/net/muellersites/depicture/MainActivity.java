@@ -1,11 +1,17 @@
 package net.muellersites.depicture;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Dialog;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -17,22 +23,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import net.muellersites.depicture.Objects.Lobby;
+import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Tasks.CreateLobbyTask;
 import net.muellersites.depicture.Tasks.JoinLobbyTask;
+import net.muellersites.depicture.Tasks.RefreshTokenTask;
 import net.muellersites.depicture.Utils.DBHelper;
-import net.muellersites.depicture.Views.DrawView;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private User user;
     private Lobby lobby;
     private Button startButton;
+    private ConstraintLayout main_layout;
     private String server = "https://muellersites.net/api/";
 
     static {
@@ -57,19 +62,21 @@ public class MainActivity extends AppCompatActivity
 
         dbHelper = new DBHelper(this);
 
-        if (android.os.Build.VERSION.SDK_INT >= 23){
+        /*if (android.os.Build.VERSION.SDK_INT >= 23){
             String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE"};
 
             int permsRequestCode = 200;
 
             requestPermissions(perms, permsRequestCode);
-        }
+        }*/
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        main_layout = (ConstraintLayout) findViewById(R.id.activity_main);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -79,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 try {
-                    lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(2000, TimeUnit.MILLISECONDS);
+                    lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(5000, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     Log.d("Dev", "Error during CreateLobbyTask");
                     e.printStackTrace();
@@ -89,7 +96,10 @@ public class MainActivity extends AppCompatActivity
                     snackbar.show();
                 }
                 if (lobby != null){
-                    startActivity(new Intent(MainActivity.this, LobbyActivity.class));
+                    Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
+                    Log.d("Dev", "Passing on Lobby: " + lobby.getId() + "; " + lobby.getMessage());
+                    intent.putExtra("lobby", lobby);
+                    startActivity(intent);
                 }
             }
         });
@@ -195,10 +205,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void openJoinDialog() {
-        Dialog dialog = new Dialog(this);
+        final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.join_dialog);
         dialog.setCancelable(false);
         Button join = (Button) dialog.findViewById(R.id.form_join_button);
+        ImageButton exit = (ImageButton) dialog.findViewById(R.id.closeDialog);
 
         final EditText lobby_field = (EditText) dialog.findViewById(R.id.form_lobby_id);
         final EditText username_field = (EditText) dialog.findViewById(R.id.form_lobby_username);
@@ -208,11 +219,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Integer lobby_id = Integer.parseInt(lobby_field.getText().toString());
-                String username = username_field.getText().toString();
+                TempUser tempUser = new TempUser();
+                tempUser.setName(username_field.getText().toString());
                 Lobby lobby = new Lobby();
                 lobby.setId(lobby_id);
+                lobby.setTempUser(tempUser);
                 try {
-                    lobby = new JoinLobbyTask(server + "lobby/join/" + lobby_id).execute(username).get();
+                    lobby = new JoinLobbyTask(server + "lobby/join/" + lobby_id + "/").execute(lobby).get();
                 } catch (Exception e) {
                     Log.d("Dev", "Error during JoinLobbyTask");
                     e.printStackTrace();
@@ -222,8 +235,17 @@ public class MainActivity extends AppCompatActivity
                     snackbar.show();
                 }
                 if (lobby != null){
-                    startActivity(new Intent(MainActivity.this, LobbyActivity.class));
+                    Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
+                    intent.putExtra("lobby", lobby);
+                    startActivity(intent);
                 }
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
 
@@ -257,15 +279,50 @@ public class MainActivity extends AppCompatActivity
     }
 
     void updateMainSync(){
+        showProgress(true);
         user = dbHelper.getUser();
 
-        if(!user.getName().equals("FAILURE")){
+        if(!user.getName().equals("FAILURE") && user.getToken() != null){
+            try {
+                Log.d("Dev", "executing RTT, token: " + user.getToken());
+                user.setToken(new RefreshTokenTask(user.getToken()).execute("https://muellersites.net/api/token-refresh/").get());
+                dbHelper.updateUser(user);
+            } catch (Exception e) {
+                Log.e("Dev", "Error executing RefreshTokenTask");
+            }
             handleLogin(navigationView, user);
             startButton.setVisibility(View.VISIBLE);
+            showProgress(false);
         }else{
             handleLogout(navigationView, getApplicationContext());
             startButton.setVisibility(View.INVISIBLE);
+            showProgress(false);
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        final View mProgressView = findViewById(R.id.main_progress);
+
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        main_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+        main_layout.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                main_layout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 }

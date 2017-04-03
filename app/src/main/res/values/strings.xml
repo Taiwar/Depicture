@@ -34,14 +34,12 @@
     <string name="log_in_item">Log in</string>
     <string name="logout_item">Log out</string>
     <string name="title_activity_scribbler">Scribbler</string>
-    <string name="depicture">Depicture</string>
-    <string name="title_activity_draw">DrawActivity</string>
+    <string name="title_activity_draw">Draw</string>
 
     <!-- Strings related to login -->
     <string name="prompt_name">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_name">This username is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -51,9 +49,12 @@
     </string>
     <string name="title_activity_login">Log In</string>
 
-    <string name="title_activity_lobby">LobbyActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_lobby">Lobby</string>
     <string name="form_lobby_id_hint">Lobby ID</string>
-    <string name="form_lobby_username_hint">Username</string>
+    <string name="message_default">Message</string>
+    <string name="ID_default">ID</string>
+    <string name="draw_btn">Draw</string>
+    <string name="default_confirm_question">Are you sure?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

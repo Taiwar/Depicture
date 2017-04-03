@@ -3,23 +3,12 @@ package net.muellersites.depicture.Tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Objects.User;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MultipartBody;
@@ -27,21 +16,21 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
-public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
+
+public class UploadUrlTask extends AsyncTask<String, Void, Void> {
 
     private String url;
 
-    public JoinLobbyTask(String url) {
+    public UploadUrlTask(String url) {
         this.url = url;
     }
 
     @Override
-    protected Lobby doInBackground(Lobby... params) {
+    protected Void doInBackground(String... params) {
         byte[] bytes;
-        Lobby new_lobby = params[0];
-        Log.d("Dev", "connecting to " + url);
-        Log.d("dev", "with username: " + new_lobby.getTempUser().getName());
+        Log.d("Dev", "connecting to " + params[0]);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
@@ -51,11 +40,11 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("username", params[0].getTempUser().getName())
+                .addFormDataPart("file_url", url)
                 .build();
 
         Request request = new Request.Builder()
-                .url(url)
+                .url(params[0])
                 .post(body)
                 .build();
 
@@ -69,17 +58,18 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
             if (bytes != null && bytes.length > 0) {
                 Log.d("Dev", new String(bytes));
                 JSONObject json = new JSONObject(new String(bytes));
-                Log.e("Dev", "Successfully created lobby");
+                Log.e("Dev", "Successfully uploaded pic");
                 Log.e("Dev", json.toString());
-                new_lobby.setId(json.getInt("lobby_id"));
-                new_lobby.setOwner(json.getString("owner"));
-                new_lobby.getTempUser().setId(json.getInt("user_id"));
-                new_lobby.setMessage(json.getString("message"));
-                return new_lobby;
+                if (!json.getBoolean("success")) {
+                    throw new Exception("Failure during upload");
+                }
             }
         } catch (Exception e) {
-            Log.e("Dev", "Pic Upload failed", e);
+            Log.e("Dev", "Pic Upload failed");
+            //Log.e("Dev", e.getMessage());
+            Log.e("Dev", e.toString(), e);
         }
         return null;
     }
+
 }

@@ -1,14 +1,18 @@
 package net.muellersites.depicture.Views;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -16,22 +20,30 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
+import net.muellersites.depicture.Objects.TempUser;
+import net.muellersites.depicture.Objects.User;
+import net.muellersites.depicture.Tasks.UploadPicTask;
+import net.muellersites.depicture.Tasks.UploadUrlTask;
+
 
 public class DrawView extends View implements OnTouchListener {
-    private static final String TAG = "Dev";
 
 
     private Canvas mCanvas;
     private Path mPath;
     private Paint mPaint;
-    private LinkedList<Path> paths = new LinkedList<Path>();
+    private LinkedList<Path> paths = new LinkedList<>();
+    private Map<Path, Integer> colorsMap = new HashMap<>();
     private Bitmap bitmap;
+    private int selectedColor = Color.BLACK;
+    private float mX, mY;
+    private static final float TOUCH_TOLERANCE = 4;
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public DrawView(Context context, Integer color) {
+    public DrawView(Context context) {
         super(context);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -44,12 +56,12 @@ public class DrawView extends View implements OnTouchListener {
         display.getSize(size);
         int width = size.x;
         int height = size.y;
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        mPaint.setColor(color);
+        mPaint.setColor(selectedColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -57,6 +69,7 @@ public class DrawView extends View implements OnTouchListener {
         mCanvas = new Canvas(bitmap);
         mPath = new Path();
         paths.add(mPath);
+        colorsMap.put(mPath, selectedColor);
     }
 
     @Override
@@ -66,13 +79,21 @@ public class DrawView extends View implements OnTouchListener {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        for (Path p : paths){
-            canvas.drawPath(p, mPaint);
+        if (mPaint != null) {
+            for (Path p : paths) {
+                if (colorsMap.get(p) != null) {
+                    mPaint.setColor(colorsMap.get(p));
+                    canvas.drawPath(p, mPaint);
+                }
+            }
+            mPaint.setColor(selectedColor);
+            canvas.drawPath(mPath, mPaint);
         }
     }
 
-    private float mX, mY;
-    private static final float TOUCH_TOLERANCE = 4;
+    public void changeColor(int color) {
+        this.selectedColor = color;
+    }
 
     private void touch_start(float x, float y) {
         mPath.reset();
@@ -95,6 +116,7 @@ public class DrawView extends View implements OnTouchListener {
         mPath.lineTo(mX, mY);
         // commit the path to our offscreen
         mCanvas.drawPath(mPath, mPaint);
+        colorsMap.put(mPath, selectedColor);
         // kill this so we don't double draw
         mPath = new Path();
         paths.add(mPath);
@@ -122,23 +144,21 @@ public class DrawView extends View implements OnTouchListener {
         return true;
     }
 
-    public void save(){
-        //String path = Environment.getDownloadCacheDirectory().toString();
-        FileOutputStream out = null;
+    public File saveCanvas(TempUser tempUser){
+        Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+
+        File file = new File(Environment.getExternalStorageDirectory(), tempUser.getId() + "_drawing.jpg");
+
         try {
-            out = getContext().openFileOutput("masterpiece.png", Context.MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, new FileOutputStream(file));
+            String file_url = new UploadPicTask(file).execute().get();
+            new UploadUrlTask(file_url).execute("https://muellersites.net/api/lobby/upload/" + tempUser.getId() + "/");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+        return file;
     }
 
 }

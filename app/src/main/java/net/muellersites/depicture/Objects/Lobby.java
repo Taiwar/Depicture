@@ -1,12 +1,14 @@
 package net.muellersites.depicture.Objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Lobby {
+public class Lobby implements Serializable{
     private Integer id;
     private String owner;
     private ArrayList<String> players;
     private String message;
+    private TempUser tempUser;
 
     public Integer getId() {
         return id;
@@ -38,5 +40,13 @@ public class Lobby {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public TempUser getTempUser() {
+        return tempUser;
+    }
+
+    public void setTempUser(TempUser tempUser) {
+        this.tempUser = tempUser;
     }
 }
