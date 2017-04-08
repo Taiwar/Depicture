@@ -13,61 +13,48 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class GetUserData {
 
-    public static User main(User user, String server_url) throws IOException {
-        URL url = new URL(server_url);
-        Log.d("Dev", "connecting to: " + url.toString());
-        String result = "";
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    public static User main(User user, String server_url) throws IOException, JSONException {
+        byte[] bytes;
+        Log.d("Dev", "GUD: connecting to " + server_url);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(server_url)
+                .header("Authorization", "JWT " + user.getToken())
+                .build();
+
+
+        Log.d("Dev", "Built request");
         try {
-            Log.d("Dev", "Trying to connect with token: " + user.getToken());
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty ("Authorization", "JWT " + user.getToken());
-
-            InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result += line;
-                }
-            }catch (Exception exc){
-                Log.e("Dev", "Exception during read: " + exc);
-                throw exc;
-            } finally {
-                try {
-                    Log.d("Dev", "finished reading, closing stream...");
-                    in.close();
-                } catch (IOException ex) {
-                    Log.e("Dev", "IOException while closing in: " + ex);
-                    ex.printStackTrace();
-                }
-            }
-
-            Log.d("Dev", "Received data, decoding...");
-
-            try {
-                JSONObject json = new JSONObject(result);
+            Response response = client.newCall(request).execute();
+            bytes =  response.body().bytes();
+            response.close();
+            if (bytes != null && bytes.length > 0) {
+                Log.d("Dev", new String(bytes));
+                JSONObject json = new JSONObject(new String(bytes));
                 user.setEmail((String) json.get("email"));
                 Log.d("Dev", "Got user data: " + user.getEmail());
-            } catch (JSONException ex) {
-                Log.e("Dev", "Caught JSONException" + ex);
-                ex.printStackTrace();
             }
-
-            return user;
-        }catch (Exception ex){
-            Log.e("Dev", "Error while connecting to server! " + ex);
-            Log.e("Dev", ex.getMessage());
-            ex.printStackTrace();
-            throw ex;
-        }finally {
-            connection.disconnect();
+        } catch (Exception e) {
+            Log.e("Dev", "Getting user data failed");
+            Log.e("Dev", e.toString(), e);
+            throw e;
         }
+        return user;
     }
 }

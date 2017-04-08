@@ -32,6 +32,8 @@ import net.muellersites.depicture.Objects.LoginData;
 import net.muellersites.depicture.Utils.AuthenticateUser;
 import net.muellersites.depicture.Utils.GetUserData;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 
 
@@ -220,6 +222,8 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
                     dbHelper.updateUser(user);
                 }
             } catch (IOException e) {
+                return false;
+            } catch (JSONException e) {
                 return false;
             }
 

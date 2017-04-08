@@ -16,77 +16,58 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AuthenticateUser {
 
-    public static User main(LoginData loginData, String server_url) throws IOException {
+    public static User main(LoginData loginData, String server_url) throws IOException, JSONException {
+        byte[] bytes;
         User result_user = new User();
-        URL url = new URL(server_url);
-        Log.d("Dev", "connecting to: " + url.toString());
-        String result = "";
-        String data = "username=" + URLEncoder.encode(loginData.getName(), "UTF-8") + "&password=" + URLEncoder.encode(loginData.getPassword(), "UTF-8");
-        Log.d("Dev", "With data: " + data);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        Log.d("Dev", "Auth: connecting to " + server_url);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .build();
+
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("username", loginData.getName())
+                .addFormDataPart("password", loginData.getPassword())
+                .build();
+
+        Request request = new Request.Builder()
+                .url(server_url)
+                .post(body)
+                .build();
+
+
+        Log.d("Dev", "Built request");
         try {
-            Log.d("Dev", "Trying to connect");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            connection.setUseCaches(false);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Accept", "application/json");
-
-            Log.d("Dev", "Beginning write");
-            DataOutputStream dataOut = new DataOutputStream(
-                    connection.getOutputStream());
-            dataOut.writeBytes(data);
-            dataOut.flush();
-            dataOut.close();
-
-            InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-            Log.d("Dev", "Beginning read");
-
-            try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result += line;
-                }
-            }catch (Exception exc){
-                Log.e("Dev", "Exception during read: " + exc);
-                throw exc;
-            } finally {
-                try {
-                    Log.d("Dev", "finished reading, closing stream...");
-                    in.close();
-                } catch (IOException ex) {
-                    Log.e("Dev", "IOException while closing in: " + ex);
-                    ex.printStackTrace();
-                }
-            }
-
-            Log.d("Dev", "Received data, decoding...");
-
-            try {
-                JSONObject json = new JSONObject(result);
+            Response response = client.newCall(request).execute();
+            bytes =  response.body().bytes();
+            response.close();
+            if (bytes != null && bytes.length > 0) {
+                Log.d("Dev", new String(bytes));
+                JSONObject json = new JSONObject(new String(bytes));
+                Log.e("Dev", "Success");
+                Log.e("Dev", json.toString());
                 result_user.setName(loginData.getName());
                 result_user.setPassword(loginData.getPassword());
-                result_user.setToken((String) json.get("token"));
-            } catch (JSONException ex) {
-                Log.e("Dev", "Caught JSONException" + ex);
-                ex.printStackTrace();
+                result_user.setToken(json.getString("token"));
             }
-
-            Log.d("Dev", "returning user: " + result_user.getName());
-            return result_user;
-        }catch (Exception ex){
-            Log.e("Dev", "Error while connecting to server! " + ex);
-            Log.e("Dev", ex.getMessage());
-            ex.printStackTrace();
-            throw ex;
-        }finally {
-            connection.disconnect();
+        } catch (Exception e) {
+            Log.e("Dev", "User Auth failed");
+            Log.e("Dev", e.toString(), e);
+            throw e;
         }
+        return result_user;
     }
 }

@@ -26,6 +26,7 @@ import okio.Buffer;
 public class UploadPicTask extends AsyncTask<String, Void, String> {
 
     private File file;
+    private String IMGUR_API_KEY = "0123456789";
 
     public UploadPicTask(File file) {
         this.file = file;
@@ -60,7 +61,7 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
 
 
         Request request = new Request.Builder()
-                .header("Authorization", "Client-ID NOPE")
+                .header("Authorization", "Client-ID " + IMGUR_API_KEY)
                 .url("https://api.imgur.com/3/image")
                 .post(body)
                 .build();
