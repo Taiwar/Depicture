@@ -25,4 +25,20 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_format_color_fill_white_48dp" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_undo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_undo_white_48dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_redo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_redo_white_48dp" />
+
 </android.support.design.widget.CoordinatorLayout>

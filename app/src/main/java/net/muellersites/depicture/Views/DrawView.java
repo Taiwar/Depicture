@@ -14,6 +14,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +34,7 @@ public class DrawView extends View implements OnTouchListener {
     private Path mPath;
     private Paint mPaint;
     private LinkedList<Path> paths = new LinkedList<>();
+    private LinkedList<Path> undone_paths = new LinkedList<>();
     private Map<Path, Integer> colorsMap = new HashMap<>();
     private Bitmap bitmap;
     private int selectedColor = Color.BLACK;
@@ -142,6 +144,22 @@ public class DrawView extends View implements OnTouchListener {
                 break;
         }
         return true;
+    }
+
+    public void onClickUndo () {
+        if (paths.size() >0 ) {
+            Log.d("Dev", "Got " + paths.size() + " paths, removing " + (paths.size() - 2));
+            undone_paths.add(paths.remove(paths.size() - 2));
+            invalidate();
+        }
+    }
+
+    public void onClickRedo (){
+        if (undone_paths.size() > 0) {
+            Log.d("Dev", "Got " + undone_paths.size() + " undone paths, adding " + (undone_paths.size() - 1) + " to " + paths.size() + " paths");
+            paths.add(undone_paths.remove(undone_paths.size() - 1));
+            invalidate();
+        }
     }
 
     public File saveCanvas(TempUser tempUser){

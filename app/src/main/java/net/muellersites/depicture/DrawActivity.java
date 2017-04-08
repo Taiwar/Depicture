@@ -70,6 +70,21 @@ public class DrawActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton undo_fab = (FloatingActionButton) findViewById(R.id.fab_undo);
+        undo_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawView.onClickUndo();
+            }
+        });
+
+        FloatingActionButton redo_fab = (FloatingActionButton) findViewById(R.id.fab_redo);
+        redo_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawView.onClickRedo();
+            }
+        });
     }
 
     private void showColorPickerDialog() {
