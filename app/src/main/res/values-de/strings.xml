@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ID_default">ID</string>
+    <string name="about_textview">Über Depicture</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_sign_in">Anmelden</string>
+    <string name="default_confirm_question">Bist du sicher?</string>
+    <string name="draw_btn">Zeichnen</string>
+    <string name="error_field_required">Dieses Feld wird benötigt</string>
+    <string name="error_incorrect_password">Passwort falsch</string>
+    <string name="error_invalid_name">Nutzername nicht vorhanden</string>
+    <string name="error_invalid_password">Passwort zu kurz</string>
+    <string name="form_lobby_id_hint">Lobby ID</string>
+    <string name="home_item">Home</string>
+    <string name="join">Beitreten</string>
+    <string name="login_reminder">Anmelden um Onlinefunktionen zu nutzen</string>
+    <string name="log_in_item">Anmelden</string>
+    <string name="logout_item">Abmelden</string>
+    <string name="message_default">Nachricht</string>
+    <string name="navigation_drawer_close">Benachrichtigungsleiste schließen</string>
+    <string name="navigation_drawer_open">Benachrichtigungsleiste öffnen</string>
+    <string name="new_game_btn">Neues Spiel</string>
+    <string name="no">Nein</string>
+    <string name="offline_string">Offline</string>
+    <string name="pref_about_title">Über Depicture</string>
+    <string name="pref_general_title">Allgemein</string>
+    <string name="pref_header_general">Allgemein</string>
+    <string name="prompt_name">Nutzername</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="title_activity_draw">Zeichnen</string>
+    <string name="title_activity_lobby">Lobby</string>
+    <string name="title_activity_login">Anmelden</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="yes">Ja</string>
+</resources>

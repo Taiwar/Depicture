@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Depicture</string>
+    <string name="app_name" translatable="false">Depicture</string>
 
     <!-- Settings -->
 
@@ -18,35 +18,32 @@
         <item>Copyright: </item>
         <item>Developer: Jonas Müller</item>
     </string-array>
-    <string name="title_activity_main">Depicture</string>
+    <string name="title_activity_main" translatable="false">Depicture</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="new_game_btn">Neues Spiel</string>
-    <string name="join">Beitreten</string>
-    <string name="kritzel">Depicture</string>
+    <string name="new_game_btn">New Game</string>
+    <string name="join">Join</string>
+    <string name="Depicture" translatable="false">Depicture</string>
     <string name="title_activity_settings">Settings</string>
     <string name="offline_string">Offline</string>
     <string name="login_reminder">Log in to use online functionalities</string>
     <string name="home_item">Home</string>
     <string name="log_in_item">Log in</string>
     <string name="logout_item">Log out</string>
-    <string name="title_activity_scribbler">Scribbler</string>
+    <string name="title_activity_scribbler" translatable="false">Scribbler</string>
     <string name="title_activity_draw">Draw</string>
 
     <!-- Strings related to login -->
     <string name="prompt_name">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="error_invalid_name">This username is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_name">Invalid username</string>
+    <string name="error_invalid_password">Password is too short</string>
+    <string name="error_incorrect_password">Incorrect password</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="title_activity_login">Log In</string>
 
     <string name="title_activity_lobby">Lobby</string>
