@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Objects.User;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     private Button startButton;
     private ConstraintLayout main_layout;
     private String server = "https://muellersites.net/api/";
+    private String registration_token;
 
     static {
         System.loadLibrary("native-lib");
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 try {
+                    user.setFirebase_ID(registration_token);
                     lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(5000, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     Log.d("Dev", "Error during CreateLobbyTask");
@@ -113,7 +117,12 @@ public class MainActivity extends AppCompatActivity
         });
 
         updateMainSync();
+
+        registration_token = FirebaseInstanceId.getInstance().getToken();
+        Log.d("Dev", "Firebase Token: " + registration_token);
+        //new SendFirebaseTokenTask(registration_token, deviceId).execute("https://muellersites.net/api/devices/");
     }
+
 
     @Override
     public void onBackPressed() {
@@ -221,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                 Integer lobby_id = Integer.parseInt(lobby_field.getText().toString());
                 TempUser tempUser = new TempUser();
                 tempUser.setName(username_field.getText().toString());
+                tempUser.setFirebase_ID(registration_token);
                 Lobby lobby = new Lobby();
                 lobby.setId(lobby_id);
                 lobby.setTempUser(tempUser);

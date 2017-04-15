@@ -2,21 +2,13 @@ package net.muellersites.depicture.Tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.webkit.WebView;
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MultipartBody;
@@ -24,25 +16,22 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
-public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
+public class StartLobbyTask extends AsyncTask<User, Void, Void> {
 
     private String url;
 
-    public CreateLobbyTask(String url) {
+    public StartLobbyTask(String url) {
         this.url = url;
     }
 
     @Override
-    protected Lobby doInBackground(User... params) {
+    protected Void doInBackground(User... params) {
         byte[] bytes;
-        Lobby new_lobby = new Lobby();
         User user = params[0];
-        new_lobby.setTempUser(user);
-        new_lobby.setIsOwner(true);
-        new_lobby.setOwner(params[0].getName());
         Log.d("Dev", "connecting to " + url);
-        Log.d("dev", "with token: " + params[0].getToken() + " and firebase_id: " + user.getFirebase_ID());
+        Log.d("dev", "with token: " + user.getToken());
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
@@ -50,18 +39,10 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
                 .writeTimeout(5, TimeUnit.SECONDS)
                 .build();
 
-        RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("firebase_id", user.getFirebase_ID())
-                .addFormDataPart("word_list_id", "1")
-                .build();
-
         Request request = new Request.Builder()
                 .url(url)
-                .header("Authorization", "JWT " + params[0].getToken())
-                .post(body)
+                .header("Authorization", "JWT " + user.getToken())
                 .build();
-
 
         Log.d("Dev", "Built request");
         try {
@@ -72,16 +53,14 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
             if (bytes != null && bytes.length > 0) {
                 Log.d("Dev", new String(bytes));
                 JSONObject json = new JSONObject(new String(bytes));
-                Log.e("Dev", "Successfully created lobby");
+                Log.e("Dev", "Successfully started lobby");
                 Log.e("Dev", json.toString());
-                new_lobby.setId(json.getInt("id"));
-                new_lobby.setMessage(json.getString("message"));
-                new_lobby.getTempUser().setId(json.getInt("player_id"));
-                Log.d("Dev", "Task returning Lobby with isOwner: " + new_lobby.getIsOwner());
-                return new_lobby;
+                if (!json.getBoolean("success")) {
+                    throw new Exception("Failure during upload");
+                }
             }
         } catch (Exception e) {
-            Log.e("Dev", "Lobby creation failed");
+            Log.e("Dev", "Starting action failed");
             Log.e("Dev", e.toString(), e);
         }
         return null;

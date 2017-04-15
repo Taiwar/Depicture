@@ -1,22 +1,23 @@
 package net.muellersites.depicture;
 
 import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import net.muellersites.depicture.Objects.Lobby;
-import net.muellersites.depicture.Objects.User;
+import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Utils.DBHelper;
 import net.muellersites.depicture.Views.DrawView;
 
@@ -27,7 +28,7 @@ import me.priyesh.chroma.ColorSelectListener;
 public class DrawActivity extends AppCompatActivity {
 
     private DrawView drawView;
-    private User currUser;
+    private TempUser currUser;
     private Lobby lobby;
     private DrawActivity drawActivity = this;
     private int mColor;
@@ -39,15 +40,21 @@ public class DrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_draw);
 
         lobby = (Lobby) getIntent().getSerializableExtra("lobby");
+        String word = getIntent().getStringExtra("word");
 
-        //DBHelper dbHelper = new DBHelper(getApplicationContext());
-        //currUser = dbHelper.getUser();
+
+        if (lobby.getTempUser() != null) {
+            currUser= lobby.getTempUser();
+        }else {
+            DBHelper dbHelper = new DBHelper(getApplicationContext());
+            currUser = dbHelper.getUser();
+        }
 
         drawView = new DrawView(this);
         drawView.setBackgroundColor(Color.WHITE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        RelativeLayout content_draw = (RelativeLayout) findViewById(R.id.content_draw);
+        final RelativeLayout content_draw = (RelativeLayout) findViewById(R.id.content_draw);
         content_draw.addView(drawView);
 
         mColor = savedInstanceState != null
@@ -85,6 +92,27 @@ public class DrawActivity extends AppCompatActivity {
                 drawView.onClickRedo();
             }
         });
+
+        TextView word_display = (TextView) findViewById(R.id.word_to_draw);
+        word_display.setText(word);
+        final TextView timer_digit = (TextView) findViewById(R.id.timer_digit);
+        final ConstraintLayout fab_container = (ConstraintLayout) findViewById(R.id.fab_container);
+        final ConstraintLayout waittimer_layout = (ConstraintLayout) findViewById(R.id.content_draw_waittimer);
+
+        new CountDownTimer(6000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                timer_digit.setText(String.valueOf(millisUntilFinished / 1000));
+            }
+
+            public void onFinish() {
+                timer_digit.setText("0");
+                waittimer_layout.setVisibility(View.GONE);
+                fab_container.setVisibility(View.VISIBLE);
+                content_draw.setVisibility(View.VISIBLE);
+            }
+
+        }.start();
     }
 
     private void showColorPickerDialog() {
@@ -115,7 +143,12 @@ public class DrawActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("Dev", "Save");
                 dialog.dismiss();
-                drawView.saveCanvas(lobby.getTempUser());
+                try {
+                    drawView.saveCanvas(getApplicationContext(), currUser);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.d("Dev", "Couldn't save Canvas");
+                    Log.d("Dev", e.toString(), e);
+                }
                 drawActivity.finish();
             }
         });

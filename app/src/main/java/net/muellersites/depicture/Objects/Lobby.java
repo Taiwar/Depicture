@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Lobby implements Serializable{
     private Integer id;
     private String owner;
+    private Boolean isOwner;
     private ArrayList<String> players;
     private String message;
     private TempUser tempUser;
@@ -24,6 +25,14 @@ public class Lobby implements Serializable{
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public Boolean getIsOwner() {
+        return isOwner;
+    }
+
+    public void setIsOwner(Boolean isOwner) {
+        this.isOwner = isOwner;
     }
 
     public ArrayList<String> getPlayers() {

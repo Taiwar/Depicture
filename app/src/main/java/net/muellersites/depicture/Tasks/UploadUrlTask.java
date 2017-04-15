@@ -65,7 +65,7 @@ public class UploadUrlTask extends AsyncTask<String, Void, Void> {
                 }
             }
         } catch (Exception e) {
-            Log.e("Dev", "Pic Upload failed");
+            Log.e("Dev", "Url failed");
             //Log.e("Dev", e.getMessage());
             Log.e("Dev", e.toString(), e);
         }

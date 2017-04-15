@@ -40,6 +40,8 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
     protected Lobby doInBackground(Lobby... params) {
         byte[] bytes;
         Lobby new_lobby = params[0];
+        new_lobby.setIsOwner(false);
+        TempUser tempUser = new_lobby.getTempUser();
         Log.d("Dev", "connecting to " + url);
         Log.d("dev", "with username: " + new_lobby.getTempUser().getName());
 
@@ -51,7 +53,8 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("username", params[0].getTempUser().getName())
+                .addFormDataPart("username", tempUser.getName())
+                .addFormDataPart("firebase_id", tempUser.getFirebase_ID())
                 .build();
 
         Request request = new Request.Builder()
@@ -69,11 +72,11 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
             if (bytes != null && bytes.length > 0) {
                 Log.d("Dev", new String(bytes));
                 JSONObject json = new JSONObject(new String(bytes));
-                Log.e("Dev", "Successfully created lobby");
+                Log.e("Dev", "Successfully joined lobby");
                 Log.e("Dev", json.toString());
                 new_lobby.setId(json.getInt("lobby_id"));
                 new_lobby.setOwner(json.getString("owner"));
-                new_lobby.getTempUser().setId(json.getInt("user_id"));
+                new_lobby.getTempUser().setId(json.getInt("player_id"));
                 new_lobby.setMessage(json.getString("message"));
                 return new_lobby;
             }

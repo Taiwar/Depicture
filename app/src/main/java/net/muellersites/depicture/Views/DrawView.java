@@ -6,13 +6,13 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -22,7 +22,6 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 import net.muellersites.depicture.Objects.TempUser;
-import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Tasks.UploadPicTask;
 import net.muellersites.depicture.Tasks.UploadUrlTask;
 
@@ -147,7 +146,7 @@ public class DrawView extends View implements OnTouchListener {
     }
 
     public void onClickUndo () {
-        if (paths.size() >0 ) {
+        if (paths.size() > 1) {
             Log.d("Dev", "Got " + paths.size() + " paths, removing " + (paths.size() - 2));
             undone_paths.add(paths.remove(paths.size() - 2));
             invalidate();
@@ -162,12 +161,14 @@ public class DrawView extends View implements OnTouchListener {
         }
     }
 
-    public File saveCanvas(TempUser tempUser){
+    public File saveCanvas(Context context, TempUser tempUser) throws PackageManager.NameNotFoundException {
         Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         this.draw(canvas);
 
-        File file = new File(Environment.getExternalStorageDirectory(), tempUser.getId() + "_drawing.jpg");
+        String app_dir = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).applicationInfo.dataDir;
+
+        File file = new File(app_dir, "drawing.jpg");
 
         try {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 75, new FileOutputStream(file));

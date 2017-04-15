@@ -1,6 +1,6 @@
 package net.muellersites.depicture.Objects;
 
-public class User {
+public class User extends TempUser{
 
     private Integer Uid;
     private String Email;
