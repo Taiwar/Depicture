@@ -40,15 +40,11 @@ public class DepictureFirebaseMessagingService extends FirebaseMessagingService 
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (status.equals("start")) {
-                        Intent intent = new Intent(INTENT_FILTER);
-                        intent.putExtra("msg", String.valueOf(remoteData.get("msg")));
-                        sendBroadcast(intent);
-                    } else if (status.equals("stage 1")) {
-                        Toast.makeText(getApplicationContext(),
-                                remoteData.get("msg"),
-                                Toast.LENGTH_LONG).show();
-                    }
+                    Intent intent = new Intent(INTENT_FILTER);
+                    intent.putExtra("status", String.valueOf(status));
+                    intent.putExtra("msg", String.valueOf(remoteData.get("msg")));
+                    sendBroadcast(intent);
+
                 }
             });
         }

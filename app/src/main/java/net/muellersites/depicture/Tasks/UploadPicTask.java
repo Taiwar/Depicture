@@ -26,7 +26,7 @@ import okio.Buffer;
 public class UploadPicTask extends AsyncTask<String, Void, String> {
 
     private File file;
-    private String IMGUR_API_KEY = "1234";
+    private String IMGUR_API_KEY = "123456";
 
     public UploadPicTask(File file) {
         this.file = file;

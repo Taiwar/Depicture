@@ -12,8 +12,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="Depicture"
         android:supportsRtl="true"
-        tools:replace="android:label"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        tools:replace="android:label">
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -42,20 +42,18 @@
             android:label="@string/title_activity_lobby"
             android:theme="@style/FullscreenTheme" />
 
-        <service
-            android:name=".DepictureFirebaseMessagingService">
+        <service android:name=".DepictureFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".DepictureFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".DepictureFirebaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-
+        <activity android:name=".SubmitWordActivity"></activity>
     </application>
 
 </manifest>

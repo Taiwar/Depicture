@@ -37,7 +37,8 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="@color/textColorPrimary"/>
 
     <EditText
         android:id="@+id/form_lobby_username"
@@ -54,7 +55,8 @@
         android:maxLines="1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/form_lobby_id" />
+        app:layout_constraintTop_toBottomOf="@+id/form_lobby_id"
+        android:textColor="@color/textColorPrimary"/>
 
     <Button
         android:id="@+id/form_join_button"

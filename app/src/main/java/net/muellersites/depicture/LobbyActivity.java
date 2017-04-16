@@ -58,21 +58,25 @@ public class LobbyActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void updateLobby(String msg) {
-        Toast.makeText(getApplicationContext(),
-                msg,
-                Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, DrawActivity.class);
-        intent.putExtra("lobby", lobby);
-        intent.putExtra("word", msg);
-        startActivity(intent);
+    private void updateLobby(String status, String msg) {
+        if (status.equals("start")) {
+            Intent intent = new Intent(this, DrawActivity.class);
+            intent.putExtra("lobby", lobby);
+            intent.putExtra("word", msg);
+            startActivity(intent);
+        } else if (status.equals("stage 1")) {
+            Intent intent = new Intent(this, SubmitWordActivity.class);
+            intent.putExtra("lobby", lobby);
+            startActivity(intent);
+        }
     }
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String status = intent.getStringExtra("status");
             String msg = intent.getStringExtra("msg");
-            updateLobby(msg);
+            updateLobby(status, msg);
         }
     };
 

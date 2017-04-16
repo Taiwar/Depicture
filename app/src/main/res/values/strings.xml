@@ -46,6 +46,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="title_activity_login">Log In</string>
 
+    <string name="confirmation_question">Are you sure?</string>
     <string name="title_activity_lobby">Lobby</string>
     <string name="form_lobby_id_hint">Lobby ID</string>
     <string name="message_default">Message</string>
@@ -58,4 +59,7 @@
     <string name="game_started">The game is afoot!   Draw:</string>
     <string name="default_word">Word</string>
     <string name="_5">5</string>
+    <string name="enter_a_fitting_description">Enter a fitting description</string>
+    <string name="description">Description</string>
+    <string name="submit">Submit</string>
 </resources>

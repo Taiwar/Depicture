@@ -43,12 +43,7 @@ public class DrawActivity extends AppCompatActivity {
         String word = getIntent().getStringExtra("word");
 
 
-        if (lobby.getTempUser() != null) {
-            currUser= lobby.getTempUser();
-        }else {
-            DBHelper dbHelper = new DBHelper(getApplicationContext());
-            currUser = dbHelper.getUser();
-        }
+        currUser= lobby.getTempUser();
 
         drawView = new DrawView(this);
         drawView.setBackgroundColor(Color.WHITE);
@@ -61,11 +56,13 @@ public class DrawActivity extends AppCompatActivity {
                 ? savedInstanceState.getInt(KEY_COLOR)
                 : ContextCompat.getColor(this, R.color.colorPrimary);
 
+        final String confirmation_question = getResources().getString(R.string.confirmation_question);
+
         FloatingActionButton upload_fab = (FloatingActionButton) findViewById(R.id.fab_upload);
         upload_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openConfirmDialog("Are you sure?");
+                openConfirmDialog(confirmation_question);
             }
         });
 
