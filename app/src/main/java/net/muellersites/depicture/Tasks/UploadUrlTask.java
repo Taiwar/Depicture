@@ -49,7 +49,7 @@ public class UploadUrlTask extends AsyncTask<String, Void, Void> {
                 .build();
 
 
-        Log.d("Dev", "Built request");
+        Log.d("Dev", "Built request, sending url: " + url);
         try {
             Response response = client.newCall(request).execute();
             Log.d("Dev", "Successfully sent request");

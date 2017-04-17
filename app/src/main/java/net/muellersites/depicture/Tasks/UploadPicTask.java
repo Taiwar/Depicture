@@ -26,7 +26,7 @@ import okio.Buffer;
 public class UploadPicTask extends AsyncTask<String, Void, String> {
 
     private File file;
-    private String IMGUR_API_KEY = "123456";
+    private String IMGUR_API_KEY = "1234";
 
     public UploadPicTask(File file) {
         this.file = file;
@@ -89,7 +89,7 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
                 JSONObject json = new JSONObject(new String(bytes));
                 Log.e("Dev", "Successfully uploaded pic");
                 Log.e("Dev", json.toString());
-                return json.getJSONObject("data").getString("link");
+                return "https://i.imgur.com/" + json.getJSONObject("data").getString("id");
             }
         } catch (Exception e) {
             Log.e("Dev", "Pic Upload failed");
