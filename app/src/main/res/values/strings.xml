@@ -62,4 +62,8 @@
     <string name="enter_a_fitting_description">Enter a fitting description</string>
     <string name="description">Description</string>
     <string name="submit">Submit</string>
+    <string name="selection_button">Pick Me!</string>
+    <string name="wait_message">Waiting for other players…</string>
+    <string name="filler_string">     </string>
+    <string name="next_round">Next Round</string>
 </resources>

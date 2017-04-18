@@ -13,7 +13,7 @@ import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Tasks.UploadDescriptionTask;
 
-public class SubmitWordActivity extends AppCompatActivity {
+public class SubmitDescriptionActivity extends AppCompatActivity {
 
     private TempUser currUser;
     private Lobby lobby;
@@ -22,7 +22,7 @@ public class SubmitWordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_submit_word);
+        setContentView(R.layout.activity_submit_description);
 
         lobby = (Lobby) getIntent().getSerializableExtra("lobby");
 
@@ -57,7 +57,7 @@ public class SubmitWordActivity extends AppCompatActivity {
                 Log.d("Dev", "Save");
                 dialog.dismiss();
                 new UploadDescriptionTask("https://muellersites.net/api/lobby/upload_description/" + lobby.getTempUser().getId() + "/").execute(description);
-                SubmitWordActivity.this.finish();
+                SubmitDescriptionActivity.this.finish();
             }
         });
 

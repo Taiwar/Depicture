@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import net.muellersites.depicture.Objects.Lobby;
@@ -21,6 +20,8 @@ public class LobbyActivity extends AppCompatActivity {
 
 
     private Lobby lobby = new Lobby();
+    private Button startButton;
+    private TextView messageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +31,24 @@ public class LobbyActivity extends AppCompatActivity {
 
         registerReceiver(broadcastReceiver, new IntentFilter(DepictureFirebaseMessagingService.INTENT_FILTER));
 
-        TextView mContentView = (TextView) findViewById(R.id.message);
+        messageView = (TextView) findViewById(R.id.message);
         TextView idView = (TextView) findViewById(R.id.ID);
 
         lobby = (Lobby) getIntent().getSerializableExtra("lobby");
 
-        Button start_button = (Button) findViewById(R.id.start_button);
+        startButton = (Button) findViewById(R.id.start_button);
 
         if (lobby.getIsOwner()) {
-            start_button.setOnClickListener(new View.OnClickListener() {
+            startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser());
                 }
             });
-            start_button.setVisibility(View.VISIBLE);
+            startButton.setVisibility(View.VISIBLE);
         }
 
-        mContentView.setText(lobby.getMessage());
+        messageView.setText(lobby.getMessage());
         idView.setText(String.valueOf(lobby.getId()));
 
     }
@@ -59,15 +60,35 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     private void updateLobby(String status, String msg) {
-        if (status.equals("start")) {
-            Intent intent = new Intent(this, DrawActivity.class);
-            intent.putExtra("lobby", lobby);
-            intent.putExtra("word", msg);
-            startActivity(intent);
-        } else if (status.equals("stage 1")) {
-            Intent intent = new Intent(this, SubmitWordActivity.class);
-            intent.putExtra("lobby", lobby);
-            startActivity(intent);
+        switch (status) {
+            case "start": {
+                Intent intent = new Intent(this, DrawActivity.class);
+                intent.putExtra("lobby", lobby);
+                intent.putExtra("word", msg);
+                startButton.setVisibility(View.GONE);
+                messageView.setText(R.string.wait_message);
+                startActivity(intent);
+                break;
+            }
+            case "stage 1": {
+                Intent intent = new Intent(this, SubmitDescriptionActivity.class);
+                intent.putExtra("lobby", lobby);
+                startActivity(intent);
+                break;
+            }
+            case "stage 2": {
+                Intent intent = new Intent(this, SelectDescriptionActivity.class);
+                intent.putExtra("lobby", lobby);
+                intent.putExtra("colors", msg);
+                startActivity(intent);
+                break;
+            }
+            case "stage 3": {
+                startButton.setVisibility(View.VISIBLE);
+                startButton.setText(R.string.next_round);
+                messageView.setText(R.string.wait_message);
+                break;
+            }
         }
     }
 

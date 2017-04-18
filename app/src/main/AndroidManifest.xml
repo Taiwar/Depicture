@@ -53,7 +53,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".SubmitWordActivity"></activity>
+        <activity android:name=".SubmitDescriptionActivity" />
+        <activity android:name=".SelectDescriptionActivity"></activity>
     </application>
 
 </manifest>
