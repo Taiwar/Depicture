@@ -8,7 +8,7 @@ public class TempUser implements Serializable{
     private Integer Uid;
     private String Username;
     private String Token;
-    private String Firebase_ID;
+    private String InstanceID;
 
 
     public TempUser(){
@@ -49,11 +49,11 @@ public class TempUser implements Serializable{
         Username = username;
     }
 
-    public String getFirebase_ID() {
-        return Firebase_ID;
+    public String getInstanceID() {
+        return InstanceID;
     }
 
-    public void setFirebase_ID(String firebase_ID) {
-        Firebase_ID = firebase_ID;
+    public void setInstanceID(String instanceID) {
+        InstanceID = instanceID;
     }
 }

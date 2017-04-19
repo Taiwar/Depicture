@@ -173,7 +173,7 @@ public class DrawView extends View implements OnTouchListener {
         try {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 75, new FileOutputStream(file));
             String file_url = new UploadPicTask(file).execute().get();
-            new UploadUrlTask(file_url).execute("https://muellersites.net/api/lobby/upload_file/" + tempUser.getId() + "/");
+            new UploadUrlTask(file_url).execute("https://muellersites.net/api/upload_file/" + tempUser.getId() + "/");
         } catch (Exception e) {
             e.printStackTrace();
         }

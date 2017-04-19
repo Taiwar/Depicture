@@ -74,7 +74,7 @@ public class SelectDescriptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("Dev", "Save");
                 dialog.dismiss();
-                new UploadSelectionTask("https://muellersites.net/api/lobby/upload_selection/" + lobby.getTempUser().getId() + "/").execute(hexColor);
+                new UploadSelectionTask("https://muellersites.net/api/upload_selection/" + lobby.getTempUser().getId() + "/").execute(hexColor);
                 SelectDescriptionActivity.this.finish();
             }
         });

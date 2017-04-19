@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
+import net.muellersites.depicture.Tasks.NextRoundTask;
 import net.muellersites.depicture.Tasks.StartLobbyTask;
 
 
@@ -21,6 +24,7 @@ public class LobbyActivity extends AppCompatActivity {
 
     private Lobby lobby = new Lobby();
     private Button startButton;
+    private Button nextButton;
     private TextView messageView;
 
     @Override
@@ -37,15 +41,43 @@ public class LobbyActivity extends AppCompatActivity {
         lobby = (Lobby) getIntent().getSerializableExtra("lobby");
 
         startButton = (Button) findViewById(R.id.start_button);
+        nextButton = (Button) findViewById(R.id.next_button);
 
         if (lobby.getIsOwner()) {
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser());
+                    try {
+                        Boolean success = new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser()).get();
+                        if (!success) {
+                            Snackbar snackbar = Snackbar
+                                    .make(findViewById(R.id.lobby_frame), R.string.start_lobby_error, Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        }
+                    } catch (Exception e) {
+                        Log.e("Dev", "Exception during startLobby");
+                        Log.e("Dev", e.toString(), e);
+                    }
                 }
             });
             startButton.setVisibility(View.VISIBLE);
+
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Boolean success = new NextRoundTask("https://muellersites.net/api/next_round/").execute(lobby.getTempUser().getToken()).get();
+                        if (!success) {
+                            Snackbar snackbar = Snackbar
+                                    .make(findViewById(R.id.lobby_frame), R.string.next_round_error, Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        }
+                    } catch (Exception e) {
+                        Log.e("Dev", "Exception during startLobby");
+                        Log.e("Dev", e.toString(), e);
+                    }
+                }
+            });
         }
 
         messageView.setText(lobby.getMessage());
@@ -84,9 +116,14 @@ public class LobbyActivity extends AppCompatActivity {
                 break;
             }
             case "stage 3": {
-                startButton.setVisibility(View.VISIBLE);
-                startButton.setText(R.string.next_round);
-                messageView.setText(R.string.wait_message);
+                if (lobby.getIsOwner()) {
+                    nextButton.setVisibility(View.VISIBLE);
+                }
+                messageView.setText(R.string.waiting_for_owner);
+                break;
+            }
+            case "ended": {
+                this.finish();
                 break;
             }
         }

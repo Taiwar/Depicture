@@ -56,7 +56,7 @@ public class SubmitDescriptionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("Dev", "Save");
                 dialog.dismiss();
-                new UploadDescriptionTask("https://muellersites.net/api/lobby/upload_description/" + lobby.getTempUser().getId() + "/").execute(description);
+                new UploadDescriptionTask("https://muellersites.net/api/upload_description/" + lobby.getTempUser().getId() + "/").execute(description);
                 SubmitDescriptionActivity.this.finish();
             }
         });

@@ -5,6 +5,8 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
+import net.muellersites.depicture.Tasks.UploadInstanceIDTask;
+
 
 public class DepictureFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
@@ -38,6 +40,6 @@ public class DepictureFirebaseInstanceIDService extends FirebaseInstanceIdServic
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        //new SendFirebaseTokenTask(token).execute("https://muellersites.net/api/device/");
+        new UploadInstanceIDTask("https://muellersites.net/api/set_player_instance_id/").execute(token);
     }
 }

@@ -89,14 +89,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 try {
-                    user.setFirebase_ID(registration_token);
+                    user.setInstanceID(registration_token);
                     lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(5000, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     Log.d("Dev", "Error during CreateLobbyTask");
-                    e.printStackTrace();
                     Snackbar snackbar = Snackbar
                             .make(drawer, "Couldn't create a new lobby", Snackbar.LENGTH_LONG);
-
                     snackbar.show();
                 }
                 if (lobby != null){
@@ -119,7 +117,7 @@ public class MainActivity extends AppCompatActivity
         updateMainSync();
 
         registration_token = FirebaseInstanceId.getInstance().getToken();
-        Log.d("Dev", "Firebase Token: " + registration_token);
+        Log.d("Dev", "Instance ID: " + registration_token);
         //new SendFirebaseTokenTask(registration_token, deviceId).execute("https://muellersites.net/api/devices/");
     }
 
@@ -231,7 +229,7 @@ public class MainActivity extends AppCompatActivity
                 Integer lobby_id = Integer.parseInt(lobby_field.getText().toString());
                 TempUser tempUser = new TempUser();
                 tempUser.setName(username_field.getText().toString());
-                tempUser.setFirebase_ID(registration_token);
+                tempUser.setInstanceID(registration_token);
                 Lobby lobby = new Lobby();
                 lobby.setId(lobby_id);
                 lobby.setTempUser(tempUser);

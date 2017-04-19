@@ -42,7 +42,7 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
         new_lobby.setIsOwner(true);
         new_lobby.setOwner(params[0].getName());
         Log.d("Dev", "connecting to " + url);
-        Log.d("dev", "with token: " + params[0].getToken() + " and firebase_id: " + user.getFirebase_ID());
+        Log.d("dev", "with token: " + params[0].getToken() + " and instance_id: " + user.getInstanceID());
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
@@ -52,7 +52,7 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("firebase_id", user.getFirebase_ID())
+                .addFormDataPart("instance_id", user.getInstanceID())
                 .addFormDataPart("word_list_id", "1")
                 .build();
 
