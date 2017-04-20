@@ -28,9 +28,11 @@ import okhttp3.Response;
 public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
 
     private String url;
+    private Integer word_list_id;
 
-    public CreateLobbyTask(String url) {
+    public CreateLobbyTask(String url, Integer word_list_id) {
         this.url = url;
+        this.word_list_id = word_list_id;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
         new_lobby.setTempUser(user);
         new_lobby.setIsOwner(true);
         new_lobby.setOwner(params[0].getName());
-        Log.d("Dev", "connecting to " + url);
+        Log.d("Dev", "connecting to " + url + "; choosing word list: " + word_list_id);
         Log.d("dev", "with token: " + params[0].getToken() + " and instance_id: " + user.getInstanceID());
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -53,7 +55,7 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("instance_id", user.getInstanceID())
-                .addFormDataPart("word_list_id", "1")
+                .addFormDataPart("word_list_id", String.valueOf(word_list_id))
                 .build();
 
         Request request = new Request.Builder()

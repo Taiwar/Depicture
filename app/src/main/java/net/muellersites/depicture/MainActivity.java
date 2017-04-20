@@ -23,9 +23,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ConstraintLayout main_layout;
     private String server = "https://muellersites.net/api/";
     private String registration_token;
+    private DrawerLayout drawer;
 
     static {
         System.loadLibrary("native-lib");
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity
             requestPermissions(perms, permsRequestCode);
         }*/
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -88,21 +92,7 @@ public class MainActivity extends AppCompatActivity
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    user.setInstanceID(registration_token);
-                    lobby = new CreateLobbyTask(server + "create_lobby/").execute(user).get(5000, TimeUnit.MILLISECONDS);
-                } catch (Exception e) {
-                    Log.d("Dev", "Error during CreateLobbyTask");
-                    Snackbar snackbar = Snackbar
-                            .make(drawer, "Couldn't create a new lobby", Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
-                if (lobby != null){
-                    Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
-                    Log.d("Dev", "Passing on Lobby: " + lobby.getId() + "; " + lobby.getMessage());
-                    intent.putExtra("lobby", lobby);
-                    startActivity(intent);
-                }
+                openCreateDialog();
             }
         });
 
@@ -211,15 +201,105 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
+    private void openCreateDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.create_dialog);
+        final Button create = (Button) dialog.findViewById(R.id.form_create_button);
+        ImageButton exit = (ImageButton) dialog.findViewById(R.id.closeDialog);
+
+        final Boolean[] use_id = new Boolean[1];
+
+        final Spinner spinner = (Spinner) dialog.findViewById(R.id.wordList_spinner);
+        Log.d("Dev", String.valueOf(spinner));
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.default_wordLists, R.layout.spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        final Integer[] listPosition = new Integer[1];
+
+        final ConstraintLayout form_choice_layout = (ConstraintLayout) dialog.findViewById(R.id.form_choice_layout);
+        final EditText id_field = (EditText) dialog.findViewById(R.id.form_word_list_id);
+        final Button chooseButton = (Button) dialog.findViewById(R.id.choose_default_btn);
+        final Button enterButton = (Button) dialog.findViewById(R.id.enter_custom_btn);
+
+        View.OnClickListener choiceClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v == enterButton) {
+                    use_id[0] = true;
+                    id_field.setVisibility(View.VISIBLE);
+                } else {
+                    use_id[0] = false;
+                    spinner.setVisibility(View.VISIBLE);
+                }
+                form_choice_layout.setVisibility(View.GONE);
+                create.setVisibility(View.VISIBLE);
+            }
+        };
+
+        chooseButton.setOnClickListener(choiceClickListener);
+        enterButton.setOnClickListener(choiceClickListener);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                listPosition[0] = position + 1;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        dialog.show();
+
+        create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                Integer list_id;
+                if (use_id[0]) {
+                    list_id = Integer.parseInt(id_field.getText().toString());
+                } else {
+                    list_id = listPosition[0];
+                }
+                try {
+                    user.setInstanceID(registration_token);
+                    lobby = new CreateLobbyTask(server + "create_lobby/", list_id).execute(user).get(5000, TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    Log.d("Dev", "Error during CreateLobbyTask");
+                    Snackbar snackbar = Snackbar
+                            .make(drawer, "Couldn't create a new lobby", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+                if (lobby != null){
+                    Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
+                    Log.d("Dev", "Passing on Lobby: " + lobby.getId() + "; " + lobby.getMessage());
+                    intent.putExtra("lobby", lobby);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+    }
+
     private void openJoinDialog() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.join_dialog);
-        dialog.setCancelable(false);
         Button join = (Button) dialog.findViewById(R.id.form_join_button);
         ImageButton exit = (ImageButton) dialog.findViewById(R.id.closeDialog);
 
         final EditText lobby_field = (EditText) dialog.findViewById(R.id.form_lobby_id);
-        final EditText username_field = (EditText) dialog.findViewById(R.id.form_lobby_username);
+        final EditText username_field = (EditText) dialog.findViewById(R.id.form_word_list_id);
         dialog.show();
 
         join.setOnClickListener(new View.OnClickListener() {

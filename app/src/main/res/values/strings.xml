@@ -58,15 +58,25 @@
     <string name="start_game">Start Game</string>
     <string name="game_started">The game is afoot!   Draw:</string>
     <string name="default_word">Word</string>
-    <string name="_5">5</string>
+    <string name="_5" translatable="false">5</string>
     <string name="enter_a_fitting_description">Enter a fitting description</string>
     <string name="description">Description</string>
     <string name="submit">Submit</string>
-    <string name="selection_button">Pick Me!</string>
     <string name="wait_message">Waiting for other players…</string>
-    <string name="filler_string">     </string>
+    <string name="filler_string" translatable="false">     </string>
     <string name="next_round">Next Round</string>
     <string name="start_lobby_error">Couldn\'t start lobby</string>
     <string name="waiting_for_owner">Waiting for lobby owner</string>
     <string name="next_round_error">Couldn\'t start next round</string>
+    <string name="create">Create</string>
+    <string name="wordlist_id">WordList ID</string>
+    <string name="exit_image">Exit image</string>
+    <string name="or">or</string>
+    <string name="choose_default_word_list">Choose a default Word list</string>
+    <string name="enter_custom_word_list_id">enter a custom WordList ID</string>
+
+    <string-array name="default_wordLists">
+        <item>Default(English)</item>
+        <item>Default(German)</item>
+    </string-array>
 </resources>
