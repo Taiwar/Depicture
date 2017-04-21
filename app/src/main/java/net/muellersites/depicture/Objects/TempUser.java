@@ -5,14 +5,14 @@ import java.io.Serializable;
 
 public class TempUser implements Serializable{
 
-    private Integer Uid;
+    private String Uid;
     private String Username;
     private String Token;
     private String InstanceID;
 
 
     public TempUser(){
-        this.Uid = 0;
+        this.Uid = "";
         this.Username = "";
 
         this.Token = "";
@@ -26,18 +26,18 @@ public class TempUser implements Serializable{
         Token = token;
     }
 
-    TempUser(Integer uid, String email, String Password, String username, String token){
+    TempUser(String uid, String email, String Password, String username, String token){
         this.Uid = uid;
         this.Username = username;
         this.Token = token;
 
     }
 
-    public Integer getId() {
+    public String getId() {
         return Uid;
     }
 
-    public void setId(Integer uid) {
+    public void setId(String uid) {
         Uid = uid;
     }
 

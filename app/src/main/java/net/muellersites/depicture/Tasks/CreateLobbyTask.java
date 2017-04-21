@@ -76,9 +76,9 @@ public class CreateLobbyTask extends AsyncTask<User, Void, Lobby> {
                 JSONObject json = new JSONObject(new String(bytes));
                 Log.e("Dev", "Successfully created lobby");
                 Log.e("Dev", json.toString());
-                new_lobby.setId(json.getInt("id"));
+                new_lobby.setId(json.getString("id"));
                 new_lobby.setMessage(json.getString("message"));
-                new_lobby.getTempUser().setId(json.getInt("player_id"));
+                new_lobby.getTempUser().setId(json.getString("player_id"));
                 Log.d("Dev", "Task returning Lobby with isOwner: " + new_lobby.getIsOwner());
                 return new_lobby;
             }

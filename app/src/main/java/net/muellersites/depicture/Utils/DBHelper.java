@@ -72,7 +72,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM Users";
         Cursor cursor = db.rawQuery(query, null);
         if( cursor != null && cursor.moveToFirst() ){
-            user.setId(cursor.getInt(0));
+            user.setId(cursor.getString(0));
             user.setName(cursor.getString(1));
             user.setEmail(cursor.getString(2));
             user.setPassword(cursor.getString(3));

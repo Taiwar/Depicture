@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                Integer lobby_id = Integer.parseInt(lobby_field.getText().toString());
+                String lobby_id = lobby_field.getText().toString();
                 TempUser tempUser = new TempUser();
                 tempUser.setName(username_field.getText().toString());
                 tempUser.setInstanceID(registration_token);

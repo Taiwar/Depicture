@@ -2,7 +2,6 @@ package net.muellersites.depicture.Objects;
 
 public class User extends TempUser{
 
-    private Integer Uid;
     private String Email;
     private String Password;
     private String Username;
@@ -10,7 +9,6 @@ public class User extends TempUser{
 
 
     public User(){
-        this.Uid = 0;
         this.Email = "";
         this.Password = "";
         this.Username = "";
@@ -26,21 +24,12 @@ public class User extends TempUser{
         Token = token;
     }
 
-    User(Integer uid, String email, String Password, String username, String token){
-        this.Uid = uid;
+    User(String email, String Password, String username, String token){
         this.Email = email;
         this.Password = Password;
         this.Username = username;
         this.Token = token;
 
-    }
-
-    public Integer getId() {
-        return Uid;
-    }
-
-    public void setId(Integer uid) {
-        Uid = uid;
     }
 
     public String getEmail() {

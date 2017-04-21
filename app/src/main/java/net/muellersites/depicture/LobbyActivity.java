@@ -48,8 +48,10 @@ public class LobbyActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     try {
+                        startButton.setVisibility(View.GONE);
                         Boolean success = new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser()).get();
                         if (!success) {
+                            startButton.setVisibility(View.VISIBLE);
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.lobby_frame), R.string.start_lobby_error, Snackbar.LENGTH_LONG);
                             snackbar.show();
@@ -66,8 +68,10 @@ public class LobbyActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     try {
+                        nextButton.setVisibility(View.GONE);
                         Boolean success = new NextRoundTask("https://muellersites.net/api/next_round/").execute(lobby.getTempUser().getToken()).get();
                         if (!success) {
+                            nextButton.setVisibility(View.VISIBLE);
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.lobby_frame), R.string.next_round_error, Snackbar.LENGTH_LONG);
                             snackbar.show();

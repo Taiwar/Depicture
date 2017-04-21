@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Lobby implements Serializable{
-    private Integer id;
+    private String id;
     private String owner;
     private Boolean isOwner;
     private ArrayList<String> players;
     private String message;
     private TempUser tempUser;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
