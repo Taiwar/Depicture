@@ -5,21 +5,9 @@ import android.util.Log;
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
-import net.muellersites.depicture.Objects.User;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MultipartBody;
@@ -43,7 +31,7 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
         new_lobby.setIsOwner(false);
         TempUser tempUser = new_lobby.getTempUser();
         Log.d("Dev", "connecting to " + url);
-        Log.d("dev", "with username: " + new_lobby.getTempUser().getName());
+        Log.d("Dev", "with username: " + new_lobby.getTempUser().getName() + " and instance_id: " + new_lobby.getTempUser().getInstanceID());
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
@@ -81,7 +69,7 @@ public class JoinLobbyTask extends AsyncTask<Lobby, Void, Lobby> {
                 return new_lobby;
             }
         } catch (Exception e) {
-            Log.e("Dev", "Pic Upload failed", e);
+            Log.e("Dev", "JoinLobby failed", e);
         }
         return null;
     }

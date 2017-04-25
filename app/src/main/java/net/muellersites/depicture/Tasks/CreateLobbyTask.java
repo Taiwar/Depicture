@@ -2,21 +2,12 @@ package net.muellersites.depicture.Tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.webkit.WebView;
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MultipartBody;

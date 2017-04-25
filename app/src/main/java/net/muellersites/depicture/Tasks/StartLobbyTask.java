@@ -3,20 +3,15 @@ package net.muellersites.depicture.Tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.Buffer;
 
 public class StartLobbyTask extends AsyncTask<User, Void, Boolean> {
 

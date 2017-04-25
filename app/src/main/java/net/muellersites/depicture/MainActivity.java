@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity
                 lobby.setId(lobby_id);
                 lobby.setTempUser(tempUser);
                 try {
-                    lobby = new JoinLobbyTask(server + "lobby/join/" + lobby_id + "/").execute(lobby).get();
+                    lobby = new JoinLobbyTask(server + "join_lobby/" + lobby_id + "/").execute(lobby).get();
                 } catch (Exception e) {
                     Log.d("Dev", "Error during JoinLobbyTask");
                     e.printStackTrace();

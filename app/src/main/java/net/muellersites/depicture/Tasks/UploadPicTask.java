@@ -3,9 +3,6 @@ package net.muellersites.depicture.Tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import net.muellersites.depicture.Objects.TempUser;
-import net.muellersites.depicture.Objects.User;
-
 import org.json.JSONObject;
 
 import java.io.File;

@@ -5,8 +5,8 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.muellersites.depicture.MainActivity"
-    android:background="@color/colorPrimary">
+    android:background="@drawable/background"
+    tools:context="net.muellersites.depicture.MainActivity">
 
     <TextView
         android:id="@+id/textView"
