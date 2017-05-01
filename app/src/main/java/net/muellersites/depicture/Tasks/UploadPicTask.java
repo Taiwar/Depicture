@@ -7,13 +7,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -37,10 +34,6 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
         final MediaType MEDIA_TYPE_IMAGE = MediaType.parse("image/jpg");
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .protocols(Arrays.asList(Protocol.HTTP_1_1))
                 .build();
 
         /*RequestBody body = new MultipartBody.Builder()

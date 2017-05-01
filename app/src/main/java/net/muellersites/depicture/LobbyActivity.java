@@ -1,5 +1,6 @@
 package net.muellersites.depicture;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Tasks.NextRoundTask;
 import net.muellersites.depicture.Tasks.StartLobbyTask;
+import net.muellersites.depicture.Tasks.StopLobbyTask;
 
 
 public class LobbyActivity extends AppCompatActivity {
@@ -47,8 +49,8 @@ public class LobbyActivity extends AppCompatActivity {
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    startButton.setVisibility(View.GONE);
                     try {
-                        startButton.setVisibility(View.GONE);
                         Boolean success = new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser()).get();
                         if (!success) {
                             startButton.setVisibility(View.VISIBLE);
@@ -67,8 +69,8 @@ public class LobbyActivity extends AppCompatActivity {
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    nextButton.setVisibility(View.GONE);
                     try {
-                        nextButton.setVisibility(View.GONE);
                         Boolean success = new NextRoundTask("https://muellersites.net/api/next_round/").execute(lobby.getTempUser().getToken()).get();
                         if (!success) {
                             nextButton.setVisibility(View.VISIBLE);
@@ -93,6 +95,44 @@ public class LobbyActivity extends AppCompatActivity {
     protected void onDestroy() {
         unregisterReceiver(broadcastReceiver);
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (lobby.getIsOwner()) {
+            openConfirmDialog();
+        }
+    }
+
+    private void openConfirmDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.confirm_dialog);
+        TextView questionView = (TextView) dialog.findViewById(R.id.confirm_question);
+        questionView.setText(R.string.confirmation_question);
+        Button yes = (Button) dialog.findViewById(R.id.yes_button);
+        Button no = (Button) dialog.findViewById(R.id.no_button);
+
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Dev", "End game");
+                try {
+                    Boolean success = new StopLobbyTask("https://muellersites.net/api/stop_lobby/").execute((User) lobby.getTempUser()).get();
+                } catch (Exception e) {
+                    Log.e("Dev", "Couldn't stop lobby", e);
+                }
+                finish();
+            }
+        });
+
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     private void updateLobby(String status, String msg) {

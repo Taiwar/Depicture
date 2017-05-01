@@ -62,24 +62,26 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("email", user.getEmail());
         values.put("password", user.getPassword());
         values.put("token", user.getToken());
-        db.update("Users", values, "id=" + user.getId(), null);
+
+        String first = "rowid=(SELECT MIN(rowid) FROM " + TABLE_NAME + ")";
+        db.update("Users", values, first, null);
         db.close();
     }
 
-    public User getUser() {
+    public User getUser() throws Exception {
         User user = new User();
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM Users";
         Cursor cursor = db.rawQuery(query, null);
-        if( cursor != null && cursor.moveToFirst() ){
+        if (cursor != null && cursor.moveToFirst()) {
             user.setId(cursor.getString(0));
             user.setName(cursor.getString(1));
             user.setEmail(cursor.getString(2));
             user.setPassword(cursor.getString(3));
             user.setToken(cursor.getString(4));
             cursor.close();
-        }else {
-            user.setName("FAILURE");
+        } else {
+            throw new Exception("Couldn't get a user object");
         }
         db.close();
         return user;

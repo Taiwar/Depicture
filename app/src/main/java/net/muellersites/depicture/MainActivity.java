@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -33,6 +32,7 @@ import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import net.muellersites.depicture.Objects.AsyncTaskResult;
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Objects.User;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private User user;
     private Lobby lobby;
-    private Button startButton;
+    private Button newGame;
     private ConstraintLayout main_layout;
     private String server = "https://muellersites.net/api/";
     private String registration_token;
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         main_layout = (ConstraintLayout) findViewById(R.id.activity_main);
@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        startButton = (Button) findViewById(R.id.new_game_btn);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        newGame = (Button) findViewById(R.id.new_game_btn);
+        newGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openCreateDialog();
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         } else if (id == R.id.nav_logout){
             Log.d("Dev", "Dummy logout function");
-            handleLogout(navigationView, getApplicationContext());
+            handleLogout();
             /*try{
                 Boolean successfulLogout = new LogoutTask(this, server).execute(user).get();
                 if(successfulLogout){
@@ -197,9 +197,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         Log.d("Dev", "On resume");
-        updateMainSync();
         super.onResume();
     }
+
+    @Override
+    protected void onRestart() {
+        Log.d("Dev", "On restart");
+        updateMainSync();
+        super.onRestart();
+    }
+
 
     private void openCreateDialog() {
         final Dialog dialog = new Dialog(this);
@@ -269,7 +276,7 @@ public class MainActivity extends AppCompatActivity
                     user.setInstanceID(registration_token);
                     lobby = new CreateLobbyTask(server + "create_lobby/", list_id).execute(user).get(5000, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
-                    Log.d("Dev", "Error during CreateLobbyTask");
+                    Log.e("Dev", "Error during CreateLobbyTask", e);
                     Snackbar snackbar = Snackbar
                             .make(drawer, "Couldn't create a new lobby", Snackbar.LENGTH_LONG);
                     snackbar.show();
@@ -317,7 +324,6 @@ public class MainActivity extends AppCompatActivity
                     lobby = new JoinLobbyTask(server + "join_lobby/" + lobby_id + "/").execute(lobby).get();
                 } catch (Exception e) {
                     Log.d("Dev", "Error during JoinLobbyTask");
-                    e.printStackTrace();
                     Snackbar snackbar = Snackbar
                             .make(lobby_field.getRootView(), "Couldn't join the lobby", Snackbar.LENGTH_LONG);
 
@@ -340,7 +346,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    static void handleLogout(NavigationView navigationView, Context context){
+    public void handleLogout(){
         Menu nav_Menu = navigationView.getMenu();
         MenuItem login_item = nav_Menu.findItem(R.id.nav_login);
         MenuItem logout_item = nav_Menu.findItem(R.id.nav_logout);
@@ -349,13 +355,14 @@ public class MainActivity extends AppCompatActivity
 
         dbHelper.clearUsers();
 
-        navUsernameView.setText(context.getResources().getString(R.string.offline_string));
+        navUsernameView.setText(getResources().getString(R.string.offline_string));
 
+        newGame.setVisibility(View.GONE);
         login_item.setVisible(true);
         logout_item.setVisible(false);
     }
 
-    static void handleLogin(NavigationView navigationView, User user){
+    public void handleLogin(User user){
         Menu nav_Menu = navigationView.getMenu();
         MenuItem login_item = nav_Menu.findItem(R.id.nav_login);
         MenuItem logout_item = nav_Menu.findItem(R.id.nav_logout);
@@ -363,28 +370,35 @@ public class MainActivity extends AppCompatActivity
         TextView navUsernameView = (TextView) headerView.findViewById(R.id.nav_username_view);
         navUsernameView.setText(user.getName());
 
+        newGame.setVisibility(View.VISIBLE);
         login_item.setVisible(false);
         logout_item.setVisible(true);
     }
 
-    void updateMainSync(){
+    private void updateMainSync(){
         showProgress(true);
-        user = dbHelper.getUser();
 
-        if(!user.getName().equals("FAILURE") && user.getToken() != null){
+        try {
+            user = dbHelper.getUser();
             try {
-                Log.d("Dev", "executing RTT, token: " + user.getToken());
-                user.setToken(new RefreshTokenTask(user.getToken()).execute("https://muellersites.net/api/token-refresh/").get());
+                Log.d("Dev", "executing RTT for user:" + user.getId() + ", token: " + user.getToken());
+                AsyncTaskResult<String> asyncTaskResult = new RefreshTokenTask(user.getToken(), this).execute("https://muellersites.net/api/token-refresh/").get();
+                user.setToken(asyncTaskResult.getResult());
+                Log.d("Dev", "Saving user: " + user.getName() + " " + user.getPassword() + " " + user.getToken() + " " + user.getId());
                 dbHelper.updateUser(user);
+                handleLogin(user);
+                showProgress(false);
             } catch (Exception e) {
-                Log.e("Dev", "Error executing RefreshTokenTask");
+                Log.e("Dev", "Error executing RefreshTokenTask", e);
+                handleLogout();
+                Snackbar snackbar = Snackbar
+                        .make(drawer, "Couldn't refresh token, please relog", Snackbar.LENGTH_LONG);
+
+                snackbar.show();
             }
-            handleLogin(navigationView, user);
-            startButton.setVisibility(View.VISIBLE);
-            showProgress(false);
-        }else{
-            handleLogout(navigationView, getApplicationContext());
-            startButton.setVisibility(View.INVISIBLE);
+        } catch (Exception e) {
+            Log.d("Dev", "Couldn't get a user, handling logout", e);
+            handleLogout();
             showProgress(false);
         }
     }

@@ -216,10 +216,11 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
                 Log.d("Dev", "Authenticated user: " + user.getName());
                 user = GetUserData.main(user, server + "get-user/");
                 DBHelper dbHelper = new DBHelper(getApplicationContext());
-                if(dbHelper.getUser().getName().equals("FAILURE")){
-                    dbHelper.insertUser(user);
-                }else{
+                try {
+                    dbHelper.getUser();
                     dbHelper.updateUser(user);
+                } catch (Exception e){
+                    dbHelper.insertUser(user);
                 }
             } catch (IOException e) {
                 return false;
@@ -237,15 +238,21 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
 
             if (success) {
                 DBHelper dbHelper = new DBHelper(getApplicationContext());
-                User user = dbHelper.getUser();
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                View headerView = navigationView.getHeaderView(0);
-                TextView navUsernameView = (TextView) headerView.findViewById(R.id.nav_username_view);
-                navUsernameView.setText(user.getName());
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                Toast toast = Toast.makeText(getApplicationContext(), "Successfully logged you in as: " + user.getName(), Toast.LENGTH_SHORT);
-                toast.show();
-                finish();
+                try {
+                    User user = dbHelper.getUser();
+                    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                    View headerView = navigationView.getHeaderView(0);
+                    TextView navUsernameView = (TextView) headerView.findViewById(R.id.nav_username_view);
+                    navUsernameView.setText(user.getName());
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    Toast toast = Toast.makeText(getApplicationContext(), "Successfully logged you in as: " + user.getName(), Toast.LENGTH_SHORT);
+                    toast.show();
+                    finish();
+                } catch (Exception e) {
+                    mNameView.setError("");
+                    mPasswordView.setError("Username/Password Combination incorrect");
+                    mPasswordView.requestFocus();
+                }
             } else {
                 mNameView.setError("");
                 mPasswordView.setError("Username/Password Combination incorrect");
