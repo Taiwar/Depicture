@@ -50,4 +50,7 @@
     <string name="wait_message">Warte auf andere Spieler…</string>
     <string name="waiting_for_owner">Warte auf Lobbybesitzer</string>
     <string name="wordlist_id">Wortlisten ID</string>
+    <string name="set">Ok</string>
+    <string name="set_brush_width">Pinselbreite auswählen</string>
+    <string name="width">Breite</string>
 </resources>

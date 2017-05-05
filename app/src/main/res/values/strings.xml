@@ -76,6 +76,7 @@
     <string name="enter_custom_word_list_id">enter a custom WordList ID</string>
     <string name="width">Width</string>
     <string name="set">Set</string>
+    <string name="set_brush_width">Set brush width</string>
 
     <string-array name="default_wordLists">
         <item>Default(English)</item>

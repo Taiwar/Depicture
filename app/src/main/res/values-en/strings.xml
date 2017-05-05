@@ -50,4 +50,7 @@
     <string name="wait_message">Waiting for other players…</string>
     <string name="waiting_for_owner">Waiting for lobby owner</string>
     <string name="wordlist_id">WordList ID</string>
+    <string name="set">Set</string>
+    <string name="set_brush_width">Set brush width</string>
+    <string name="width">Width</string>
 </resources>
