@@ -28,7 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
             android:layout_marginBottom="8dp"
             android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +39,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
-            android:layout_margin="@dimen/fab_margin"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -48,11 +46,21 @@
             app:srcCompat="@drawable/ic_format_color_fill_white_48dp" />
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_width_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/fab_color_picker"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:srcCompat="@drawable/ic_brush_white_48dp" />
+
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_undo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|start"
-            android:layout_margin="@dimen/fab_margin"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -64,7 +72,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
-            android:layout_margin="@dimen/fab_margin"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintRight_toRightOf="parent"

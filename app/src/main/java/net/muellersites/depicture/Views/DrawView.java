@@ -35,8 +35,10 @@ public class DrawView extends View implements OnTouchListener {
     private LinkedList<Path> paths = new LinkedList<>();
     private LinkedList<Path> undone_paths = new LinkedList<>();
     private Map<Path, Integer> colorsMap = new HashMap<>();
+    private Map<Path, Float> widthMap = new HashMap<>();
     private Bitmap bitmap;
     private int selectedColor = Color.BLACK;
+    private float selectedWidth = 10f;
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
@@ -66,11 +68,12 @@ public class DrawView extends View implements OnTouchListener {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(10f);
+        mPaint.setStrokeWidth(selectedWidth);
         mCanvas = new Canvas(bitmap);
         mPath = new Path();
         paths.add(mPath);
         colorsMap.put(mPath, selectedColor);
+        widthMap.put(mPath, selectedWidth);
     }
 
     @Override
@@ -84,16 +87,22 @@ public class DrawView extends View implements OnTouchListener {
             for (Path p : paths) {
                 if (colorsMap.get(p) != null) {
                     mPaint.setColor(colorsMap.get(p));
+                    mPaint.setStrokeWidth(widthMap.get(p));
                     canvas.drawPath(p, mPaint);
                 }
             }
             mPaint.setColor(selectedColor);
+            mPaint.setStrokeWidth(selectedWidth);
             canvas.drawPath(mPath, mPaint);
         }
     }
 
     public void changeColor(int color) {
         this.selectedColor = color;
+    }
+
+    public void changeWidth(float width) {
+        this.selectedWidth = width;
     }
 
     private void touch_start(float x, float y) {
@@ -117,6 +126,7 @@ public class DrawView extends View implements OnTouchListener {
         mPath.lineTo(mX, mY);
         // commit the path to our offscreen
         mCanvas.drawPath(mPath, mPaint);
+        widthMap.put(mPath, selectedWidth);
         colorsMap.put(mPath, selectedColor);
         // kill this so we don't double draw
         mPath = new Path();

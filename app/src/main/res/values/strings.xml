@@ -74,6 +74,8 @@
     <string name="or">or</string>
     <string name="choose_default_word_list">Choose a default Word list</string>
     <string name="enter_custom_word_list_id">enter a custom WordList ID</string>
+    <string name="width">Width</string>
+    <string name="set">Set</string>
 
     <string-array name="default_wordLists">
         <item>Default(English)</item>

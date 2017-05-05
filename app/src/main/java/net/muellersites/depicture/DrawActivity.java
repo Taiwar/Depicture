@@ -13,12 +13,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.TempUser;
-import net.muellersites.depicture.Utils.DBHelper;
 import net.muellersites.depicture.Views.DrawView;
 
 import me.priyesh.chroma.ChromaDialog;
@@ -32,6 +33,7 @@ public class DrawActivity extends AppCompatActivity {
     private Lobby lobby;
     private DrawActivity drawActivity = this;
     private int mColor;
+    private int current_brush_width = 10;
     private static final String KEY_COLOR = "extra_color";
 
     @Override
@@ -71,6 +73,14 @@ public class DrawActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showColorPickerDialog();
+            }
+        });
+
+        FloatingActionButton width_fab = (FloatingActionButton) findViewById(R.id.fab_width_picker);
+        width_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWidthDialog();
             }
         });
 
@@ -125,6 +135,59 @@ public class DrawActivity extends AppCompatActivity {
             .create()
             .show(getSupportFragmentManager(), "dialog");
     }
+
+    private void showWidthDialog() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.stroke_width_dialog);
+        dialog.setCancelable(false);
+        final TextView widthCounter = (TextView) dialog.findViewById(R.id.widthCounter);
+        widthCounter.setText(String.valueOf(current_brush_width));
+        Button set = (Button) dialog.findViewById(R.id.set_button);
+        ImageButton exit = (ImageButton) dialog.findViewById(R.id.closeDialog);
+
+        final SeekBar widthBar = (SeekBar) dialog.findViewById(R.id.width_seek_bar);
+        widthBar.setMax(100);
+        widthBar.setProgress(current_brush_width);
+        widthBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                widthCounter.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Integer width = widthBar.getProgress();
+                current_brush_width = width;
+                Log.d("Dev", "Width change to: " + width);
+
+                dialog.dismiss();
+                drawView.changeWidth(width);
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+    }
+
 
     private void openConfirmDialog(String question) {
         final Dialog dialog = new Dialog(this);
