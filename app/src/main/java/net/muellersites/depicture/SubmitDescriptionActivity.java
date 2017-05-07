@@ -15,7 +15,6 @@ import net.muellersites.depicture.Tasks.UploadDescriptionTask;
 
 public class SubmitDescriptionActivity extends AppCompatActivity {
 
-    private TempUser currUser;
     private Lobby lobby;
     private EditText descriptionField;
 
@@ -25,8 +24,6 @@ public class SubmitDescriptionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_submit_description);
 
         lobby = (Lobby) getIntent().getSerializableExtra("lobby");
-
-        currUser= lobby.getTempUser();
 
         descriptionField = (EditText) findViewById(R.id.description_field);
         Button submitButton = (Button) findViewById(R.id.submit_button);
@@ -39,6 +36,10 @@ public class SubmitDescriptionActivity extends AppCompatActivity {
                 openConfirmDialog(confirmation_question);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
     private void openConfirmDialog(String question) {

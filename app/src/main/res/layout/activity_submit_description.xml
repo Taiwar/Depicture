@@ -34,6 +34,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="100dp"
         android:ems="10"
+        android:maxLength="100"
         android:hint="@string/description"
         android:inputType="textPersonName"
         android:textColor="@color/textColorPrimary"

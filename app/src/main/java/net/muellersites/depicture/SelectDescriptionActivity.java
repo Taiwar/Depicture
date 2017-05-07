@@ -42,6 +42,10 @@ public class SelectDescriptionActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     private void addDescriptionButton(String color) {
         final Button b = (Button) LayoutInflater.from(this).inflate(R.layout.reference_button, null);
         b.setBackgroundColor(Color.parseColor(color));

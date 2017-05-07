@@ -19,16 +19,17 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:visibility="visible"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
 
     <ProgressBar
         android:id="@+id/main_progress"
-        style="?android:attr/progressBarStyleLarge"
+        style="@android:style/Widget.Material.Light.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:visibility="gone" />
 
 </android.support.v4.widget.DrawerLayout>

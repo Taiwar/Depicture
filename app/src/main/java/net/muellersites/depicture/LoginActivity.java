@@ -234,7 +234,6 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
 
             if (success) {
                 DBHelper dbHelper = new DBHelper(getApplicationContext());
@@ -244,16 +243,19 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
                     View headerView = navigationView.getHeaderView(0);
                     TextView navUsernameView = (TextView) headerView.findViewById(R.id.nav_username_view);
                     navUsernameView.setText(user.getName());
+                    showProgress(false);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     Toast toast = Toast.makeText(getApplicationContext(), "Successfully logged you in as: " + user.getName(), Toast.LENGTH_SHORT);
                     toast.show();
                     finish();
                 } catch (Exception e) {
+                    showProgress(false);
                     mNameView.setError("");
                     mPasswordView.setError("Username/Password Combination incorrect");
                     mPasswordView.requestFocus();
                 }
             } else {
+                showProgress(false);
                 mNameView.setError("");
                 mPasswordView.setError("Username/Password Combination incorrect");
                 mPasswordView.requestFocus();

@@ -122,6 +122,10 @@ public class DrawActivity extends AppCompatActivity {
         }.start();
     }
 
+    @Override
+    public void onBackPressed() {
+    }
+
     private void showColorPickerDialog() {
         new ChromaDialog.Builder()
             .initialColor(mColor)

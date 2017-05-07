@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -266,9 +267,23 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
-                Integer list_id;
+                showProgress(true);
+                Integer list_id = null;
                 if (use_id[0]) {
-                    list_id = Integer.parseInt(id_field.getText().toString());
+                    String wordListId = id_field.getText().toString();
+                    Boolean cancel = false;
+                    View focusView = null;
+                    if (TextUtils.isEmpty(wordListId)) {
+                        id_field.setError(getString(R.string.error_field_required));
+                        focusView = id_field;
+                        cancel = true;
+                    }
+
+                    if (cancel) {
+                        focusView.requestFocus();
+                    } else {
+                        list_id = Integer.parseInt(wordListId);
+                    }
                 } else {
                     list_id = listPosition[0];
                 }
@@ -282,6 +297,7 @@ public class MainActivity extends AppCompatActivity
                     snackbar.show();
                 }
                 if (lobby != null){
+                    showProgress(false);
                     Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
                     Log.d("Dev", "Passing on Lobby: " + lobby.getId() + "; " + lobby.getMessage());
                     intent.putExtra("lobby", lobby);
@@ -312,27 +328,46 @@ public class MainActivity extends AppCompatActivity
         join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
                 String lobby_id = lobby_field.getText().toString();
-                TempUser tempUser = new TempUser();
-                tempUser.setName(username_field.getText().toString());
-                tempUser.setInstanceID(registration_token);
-                Lobby lobby = new Lobby();
-                lobby.setId(lobby_id);
-                lobby.setTempUser(tempUser);
-                try {
-                    lobby = new JoinLobbyTask(server + "join_lobby/" + lobby_id + "/").execute(lobby).get();
-                } catch (Exception e) {
-                    Log.d("Dev", "Error during JoinLobbyTask");
-                    Snackbar snackbar = Snackbar
-                            .make(lobby_field.getRootView(), "Couldn't join the lobby", Snackbar.LENGTH_LONG);
-
-                    snackbar.show();
+                String temp_username = username_field.getText().toString();
+                Boolean cancel = false;
+                View focusView = null;
+                if (TextUtils.isEmpty(lobby_id)) {
+                    lobby_field.setError(getString(R.string.error_field_required));
+                    focusView = lobby_field;
+                    cancel = true;
+                } else if (TextUtils.isEmpty(temp_username)) {
+                    username_field.setError(getString(R.string.error_field_required));
+                    focusView = username_field;
+                    cancel = true;
                 }
-                if (lobby != null){
-                    Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
-                    intent.putExtra("lobby", lobby);
-                    startActivity(intent);
+
+                if (cancel) {
+                    focusView.requestFocus();
+                } else {
+                    dialog.dismiss();
+                    showProgress(true);
+                    TempUser tempUser = new TempUser();
+                    tempUser.setName(temp_username);
+                    tempUser.setInstanceID(registration_token);
+                    Lobby lobby = new Lobby();
+                    lobby.setId(lobby_id);
+                    lobby.setTempUser(tempUser);
+                    try {
+                        lobby = new JoinLobbyTask(server + "join_lobby/" + lobby_id + "/").execute(lobby).get();
+                    } catch (Exception e) {
+                        Log.d("Dev", "Error during JoinLobbyTask");
+                        Snackbar snackbar = Snackbar
+                                .make(lobby_field.getRootView(), "Couldn't join the lobby", Snackbar.LENGTH_LONG);
+
+                        snackbar.show();
+                    }
+                    if (lobby != null){
+                        showProgress(false);
+                        Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
+                        intent.putExtra("lobby", lobby);
+                        startActivity(intent);
+                    }
                 }
             }
         });
