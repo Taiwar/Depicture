@@ -55,10 +55,9 @@ public class AuthenticateUser {
             bytes =  response.body().bytes();
             response.close();
             if (bytes != null && bytes.length > 0) {
-                Log.d("Dev", new String(bytes));
                 JSONObject json = new JSONObject(new String(bytes));
-                Log.e("Dev", "Success");
-                Log.e("Dev", json.toString());
+                Log.d("Dev", "Success");
+                Log.d("Dev", json.toString());
                 result_user.setName(loginData.getName());
                 result_user.setPassword(loginData.getPassword());
                 result_user.setToken(json.getString("token"));

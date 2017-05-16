@@ -1,21 +1,17 @@
 package net.muellersites.depicture.Tasks;
 
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
-import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.widget.Toast;
 
 import net.muellersites.depicture.MainActivity;
 import net.muellersites.depicture.Objects.AsyncTaskResult;
-import net.muellersites.depicture.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -27,11 +23,11 @@ import okhttp3.Response;
 public class RefreshTokenTask extends AsyncTask<String, Void, AsyncTaskResult<String>> {
 
     private final String token;
-    private MainActivity activity;
+    private Context context;
 
-    public RefreshTokenTask(String token, MainActivity activity) {
+    public RefreshTokenTask(String token, Context context) {
         this.token = token;
-        this.activity = activity;
+        this.context = context;
     }
 
     private final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -80,11 +76,12 @@ public class RefreshTokenTask extends AsyncTask<String, Void, AsyncTaskResult<St
     }
 
     protected void onPostExecute(AsyncTaskResult<String> result){
+        Toast toast;
         if (result.getError() != null || isCancelled()) {
-            activity.handleLogout();
+            toast = Toast.makeText(context, "Successfully refreshed token", Toast.LENGTH_LONG);
         } else {
-            Toast toast = Toast.makeText(activity, "Successfully refreshed token", Toast.LENGTH_LONG);
-            toast.show();
+            toast = Toast.makeText(context, "Couldn't refresh token", Toast.LENGTH_LONG);
         }
+        toast.show();
     }
 }

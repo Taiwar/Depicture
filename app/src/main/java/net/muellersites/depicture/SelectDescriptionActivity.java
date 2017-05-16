@@ -1,8 +1,12 @@
 package net.muellersites.depicture;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import net.muellersites.depicture.Objects.Lobby;
@@ -92,5 +97,30 @@ public class SelectDescriptionActivity extends AppCompatActivity {
 
         dialog.show();
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        buttonLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+        buttonLayout.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                buttonLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        final ProgressBar progressView = (ProgressBar) findViewById(R.id.selection_upload_progress);
+
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 }

@@ -1,16 +1,23 @@
 package net.muellersites.depicture;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -28,6 +35,7 @@ public class LobbyActivity extends AppCompatActivity {
     private Button startButton;
     private Button nextButton;
     private TextView messageView;
+    private ConstraintLayout lobby_content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,8 @@ public class LobbyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lobby);
 
         registerReceiver(broadcastReceiver, new IntentFilter(DepictureFirebaseMessagingService.INTENT_FILTER));
+
+        lobby_content = (ConstraintLayout) findViewById(R.id.lobby_content_layout);
 
         messageView = (TextView) findViewById(R.id.message);
         TextView idView = (TextView) findViewById(R.id.ID);
@@ -46,14 +56,15 @@ public class LobbyActivity extends AppCompatActivity {
         nextButton = (Button) findViewById(R.id.next_button);
 
         if (lobby.getIsOwner()) {
+            startButton.setVisibility(View.VISIBLE);
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startButton.setVisibility(View.GONE);
+                    showProgress(true);
                     try {
                         Boolean success = new StartLobbyTask("https://muellersites.net/api/start_lobby/").execute((User) lobby.getTempUser()).get();
+                        showProgress(false);
                         if (!success) {
-                            startButton.setVisibility(View.VISIBLE);
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.lobby_frame), R.string.start_lobby_error, Snackbar.LENGTH_LONG);
                             snackbar.show();
@@ -64,16 +75,15 @@ public class LobbyActivity extends AppCompatActivity {
                     }
                 }
             });
-            startButton.setVisibility(View.VISIBLE);
 
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    nextButton.setVisibility(View.GONE);
+                    showProgress(true);
                     try {
                         Boolean success = new NextRoundTask("https://muellersites.net/api/next_round/").execute(lobby.getTempUser().getToken()).get();
+                        showProgress(false);
                         if (!success) {
-                            nextButton.setVisibility(View.VISIBLE);
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.lobby_frame), R.string.next_round_error, Snackbar.LENGTH_LONG);
                             snackbar.show();
@@ -116,11 +126,13 @@ public class LobbyActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("Dev", "End game");
+                showProgress(true);
                 try {
                     Boolean success = new StopLobbyTask("https://muellersites.net/api/stop_lobby/").execute((User) lobby.getTempUser()).get();
                 } catch (Exception e) {
                     Log.e("Dev", "Couldn't stop lobby", e);
                 }
+                showProgress(false);
                 finish();
             }
         });
@@ -181,5 +193,31 @@ public class LobbyActivity extends AppCompatActivity {
             updateLobby(status, msg);
         }
     };
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        Log.d("Dev", "showing Progress?: " + show);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        lobby_content.setVisibility(show ? View.GONE : View.VISIBLE);
+        lobby_content.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                lobby_content.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        final ProgressBar progressView = (ProgressBar) findViewById(R.id.lobby_progress);
+
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
+    }
 
 }

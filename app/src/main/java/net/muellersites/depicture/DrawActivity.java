@@ -1,8 +1,12 @@
 package net.muellersites.depicture;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -14,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -207,12 +212,14 @@ public class DrawActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("Dev", "Save");
                 dialog.dismiss();
+                showProgress(true);
                 try {
                     drawView.saveCanvas(getApplicationContext(), currUser);
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.d("Dev", "Couldn't save Canvas");
                     Log.d("Dev", e.toString(), e);
                 }
+                showProgress(false);
                 drawActivity.finish();
             }
         });
@@ -226,6 +233,31 @@ public class DrawActivity extends AppCompatActivity {
 
         dialog.show();
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+        drawView.setVisibility(show ? View.GONE : View.VISIBLE);
+        drawView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                drawView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
+
+        final ProgressBar progressView = (ProgressBar) findViewById(R.id.pic_upload_progress);
+
+        progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
 }

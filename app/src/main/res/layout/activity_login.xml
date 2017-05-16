@@ -8,6 +8,15 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+    <ProgressBar
+        android:id="@+id/login_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
     <include
         layout="@layout/app_bar_login"
         android:layout_width="match_parent"

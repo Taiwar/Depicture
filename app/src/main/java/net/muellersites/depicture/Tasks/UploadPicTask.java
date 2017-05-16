@@ -6,7 +6,6 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -14,8 +13,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.Buffer;
-
 
 public class UploadPicTask extends AsyncTask<String, Void, String> {
 
@@ -36,11 +33,6 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
         OkHttpClient client = new OkHttpClient.Builder()
                 .build();
 
-        /*RequestBody body = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("title", "Scribble")
-                .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_IMAGE,  file))
-                .build();*/
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -55,16 +47,6 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
                 .url("https://api.imgur.com/3/image")
                 .post(body)
                 .build();
-
-        /*Request request = new Request.Builder()
-                .url(params[0])
-                .post(body)
-                .build();*/
-
-        /*Request request = new Request.Builder()
-                .url(params[0])
-                .post(body)
-                .build();*/
 
 
         Log.d("Dev", "Built request");
@@ -83,21 +65,8 @@ public class UploadPicTask extends AsyncTask<String, Void, String> {
             }
         } catch (Exception e) {
             Log.e("Dev", "Pic Upload failed");
-            //Log.e("Dev", e.getMessage());
             Log.e("Dev", e.toString(), e);
         }
         return null;
-    }
-
-    private static String bodyToString(final Request request){
-
-        try {
-            final Request copy = request.newBuilder().build();
-            final Buffer buffer = new Buffer();
-            copy.body().writeTo(buffer);
-            return buffer.readUtf8();
-        } catch (final IOException e) {
-            return "did not work";
-        }
     }
 }

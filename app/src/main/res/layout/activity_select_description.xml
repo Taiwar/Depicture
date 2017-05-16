@@ -7,6 +7,15 @@
     tools:context="net.muellersites.depicture.SelectDescriptionActivity"
     android:background="@color/colorPrimary">
 
+    <ProgressBar
+        android:id="@+id/selection_upload_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="0dp"

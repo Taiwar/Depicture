@@ -6,7 +6,6 @@ import android.annotation.TargetApi;
 import android.app.Dialog;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,10 +34,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import net.muellersites.depicture.Objects.AsyncTaskResult;
 import net.muellersites.depicture.Objects.Lobby;
+import net.muellersites.depicture.Objects.LoginData;
 import net.muellersites.depicture.Objects.TempUser;
 import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Tasks.CreateLobbyTask;
 import net.muellersites.depicture.Tasks.JoinLobbyTask;
+import net.muellersites.depicture.Tasks.LoginTask;
 import net.muellersites.depicture.Tasks.RefreshTokenTask;
 import net.muellersites.depicture.Utils.DBHelper;
 
@@ -56,10 +57,6 @@ public class MainActivity extends AppCompatActivity
     private String server = "https://muellersites.net/api/";
     private String registration_token;
     private DrawerLayout drawer;
-
-    static {
-        System.loadLibrary("native-lib");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +145,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -172,27 +169,6 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
-
-    @Override
-    public void onRequestPermissionsResult(int permsRequestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
-
-        switch(permsRequestCode){
-
-            case 200:
-
-                boolean storageAccepted = grantResults[0]== PackageManager.PERMISSION_GRANTED;
-
-                break;
-
-        }
-
     }
 
     @Override
@@ -418,18 +394,27 @@ public class MainActivity extends AppCompatActivity
             try {
                 Log.d("Dev", "executing RTT for user:" + user.getId() + ", token: " + user.getToken());
                 AsyncTaskResult<String> asyncTaskResult = new RefreshTokenTask(user.getToken(), this).execute("https://muellersites.net/api/token-refresh/").get();
-                user.setToken(asyncTaskResult.getResult());
-                Log.d("Dev", "Saving user: " + user.getName() + " " + user.getPassword() + " " + user.getToken() + " " + user.getId());
-                dbHelper.updateUser(user);
-                handleLogin(user);
-                showProgress(false);
+                if (asyncTaskResult.getError() == null) {
+                    user.setToken(asyncTaskResult.getResult());
+                    Log.d("Dev", "Saving user: " + user.getName() + " " + user.getPassword() + " " + user.getToken() + " " + user.getId());
+                    dbHelper.updateUser(user);
+                    handleLogin(user);
+                    showProgress(false);
+                } else {
+                    throw asyncTaskResult.getError();
+                }
             } catch (Exception e) {
                 Log.e("Dev", "Error executing RefreshTokenTask", e);
-                handleLogout();
-                Snackbar snackbar = Snackbar
-                        .make(drawer, "Couldn't refresh token, please relog", Snackbar.LENGTH_LONG);
-
-                snackbar.show();
+                AsyncTaskResult<User> asyncTaskResult = new LoginTask(new LoginData(user.getName(), user.getPassword()), this).execute("https://muellersites.net/api/token-auth/").get();
+                if (asyncTaskResult.getError() == null) {
+                    user = (asyncTaskResult.getResult());
+                    Log.d("Dev", "Saving user: " + user.getName() + " " + user.getPassword() + " " + user.getToken() + " " + user.getId());
+                    dbHelper.updateUser(user);
+                    handleLogin(user);
+                    showProgress(false);
+                } else {
+                    throw asyncTaskResult.getError();
+                }
             }
         } catch (Exception e) {
             Log.d("Dev", "Couldn't get a user, handling logout", e);

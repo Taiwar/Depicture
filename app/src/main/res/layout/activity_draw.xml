@@ -7,6 +7,15 @@
     android:fitsSystemWindows="true"
     tools:context="net.muellersites.depicture.DrawActivity">
 
+    <ProgressBar
+        android:id="@+id/pic_upload_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
     <include
         layout="@layout/content_draw_waittimer"
         android:layout_width="match_parent"

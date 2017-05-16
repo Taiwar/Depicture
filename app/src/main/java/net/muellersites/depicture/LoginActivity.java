@@ -35,6 +35,7 @@ import net.muellersites.depicture.Utils.GetUserData;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -119,7 +120,7 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password, name)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -144,22 +145,18 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+            Log.d("Dev", "showing Progress");
             mAuthTask = new UserLoginTask(name, password);
             mAuthTask.execute((Void) null);
         }
     }
 
     private boolean isNameValid(String name) {
-        boolean result = true;
-        if (name.length() < 3){
-            result = false;
-        }
-        return result;
+        return name.length() > 3;
     }
 
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+    private boolean isPasswordValid(String password, String username) {
+        return password.length() > 7 && !Objects.equals(password, username) && !password.matches("-?\\d+(\\.\\d+)?");
     }
 
     /**
@@ -167,35 +164,25 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            }
+        });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
