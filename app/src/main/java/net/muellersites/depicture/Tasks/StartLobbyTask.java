@@ -56,7 +56,7 @@ public class StartLobbyTask extends AsyncTask<User, Void, Boolean> {
             Log.e("Dev", "Starting action failed");
             Log.e("Dev", e.toString(), e);
         }
-        return null;
+        return false;
     }
 
 }

@@ -338,8 +338,8 @@ public class MainActivity extends AppCompatActivity
 
                         snackbar.show();
                     }
+                    showProgress(false);
                     if (lobby != null){
-                        showProgress(false);
                         Intent intent = new Intent(MainActivity.this, LobbyActivity.class);
                         intent.putExtra("lobby", lobby);
                         startActivity(intent);

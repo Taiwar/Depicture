@@ -1,11 +1,14 @@
 package net.muellersites.depicture.Tasks;
 
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
+
+import net.muellersites.depicture.Objects.AsyncTaskResult;
 
 import org.json.JSONObject;
-
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -14,28 +17,27 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class UploadInstanceIDTask extends AsyncTask<String, Void, Void> {
+public class RogerThatTask extends AsyncTask<String, Void, AsyncTaskResult<Boolean>> {
 
     private String url;
+    private Context context;
 
-    public UploadInstanceIDTask(String url) {
+    public RogerThatTask(String url, Context context) {
         this.url = url;
+        this.context = context;
     }
 
     @Override
-    protected Void doInBackground(String... params) {
+    protected AsyncTaskResult<Boolean> doInBackground(String... params) {
         byte[] bytes;
-        Log.d("Dev", "connecting to " + url + " with IID: " + params[0]);
+        Log.d("Dev", "connecting to " + url);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
                 .build();
 
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("instance_id", params[0])
+                .addFormDataPart("hash_id", params[0])
                 .build();
 
         Request request = new Request.Builder()
@@ -53,17 +55,28 @@ public class UploadInstanceIDTask extends AsyncTask<String, Void, Void> {
             if (bytes != null && bytes.length > 0) {
                 Log.d("Dev", new String(bytes));
                 JSONObject json = new JSONObject(new String(bytes));
-                Log.e("Dev", "Successfully uploaded instanceID");
+                Log.e("Dev", "Successfully sent roger that");
                 Log.e("Dev", json.toString());
                 if (!json.getBoolean("success")) {
                     throw new Exception("Failure during upload");
                 }
             }
         } catch (Exception e) {
-            Log.e("Dev", "Upload instanceID failed");
-            Log.e("Dev", e.toString(), e);
+            Log.e("Dev", "Send roger that failed", e);
+            return new AsyncTaskResult<>(e);
         }
-        return null;
+        return new AsyncTaskResult<>(Boolean.TRUE);
+    }
+
+    @Override
+    protected void onPostExecute(final AsyncTaskResult result) {
+        Toast toast;
+        if (result.getError() != null || isCancelled()) {
+            toast = Toast.makeText(context, "Successfully refreshed token", Toast.LENGTH_LONG);
+        } else {
+            toast = Toast.makeText(context, "Couldn't refresh token", Toast.LENGTH_LONG);
+        }
+        toast.show();
     }
 
 }

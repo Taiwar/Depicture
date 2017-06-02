@@ -15,17 +15,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import net.muellersites.depicture.Objects.Lobby;
 import net.muellersites.depicture.Objects.User;
 import net.muellersites.depicture.Tasks.NextRoundTask;
+import net.muellersites.depicture.Tasks.RogerThatTask;
 import net.muellersites.depicture.Tasks.StartLobbyTask;
 import net.muellersites.depicture.Tasks.StopLobbyTask;
+import net.muellersites.depicture.Tasks.UploadInstanceIDTask;
 
 
 public class LobbyActivity extends AppCompatActivity {
@@ -128,7 +130,7 @@ public class LobbyActivity extends AppCompatActivity {
                 Log.d("Dev", "End game");
                 showProgress(true);
                 try {
-                    Boolean success = new StopLobbyTask("https://muellersites.net/api/stop_lobby/").execute((User) lobby.getTempUser()).get();
+                    new StopLobbyTask("https://muellersites.net/api/stop_lobby/").execute((User) lobby.getTempUser()).get();
                 } catch (Exception e) {
                     Log.e("Dev", "Couldn't stop lobby", e);
                 }
@@ -149,6 +151,12 @@ public class LobbyActivity extends AppCompatActivity {
 
     private void updateLobby(String status, String msg) {
         switch (status) {
+            case "ping": {
+                new RogerThatTask("https://muellersites.net/api/roger/", getApplicationContext()).execute(lobby.getTempUser().getId());
+            }
+            case "token_update": {
+                new UploadInstanceIDTask("https://muellersites.net/api/set_player_instance_id/" + lobby.getTempUser().getId() + "/").execute(msg);
+            }
             case "start": {
                 Intent intent = new Intent(this, DrawActivity.class);
                 intent.putExtra("lobby", lobby);
@@ -188,8 +196,19 @@ public class LobbyActivity extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            try {
+                Boolean success = new RogerThatTask("https://muellersites.net/api/roger/", context).execute(lobby.getTempUser().getId()).get().getResult();
+                if (!success) {
+                    throw new Exception("Error");
+                }
+                Toast toast = Toast.makeText(context, "Updating stage", Toast.LENGTH_LONG);
+                toast.show();
+            } catch (Exception e) {
+                Log.e("Dev", "Couldn't upload roger", e);
+            }
             String status = intent.getStringExtra("status");
             String msg = intent.getStringExtra("msg");
+            Log.d("Dev", "Updating Lobby: " + status + "; " + msg);
             updateLobby(status, msg);
         }
     };

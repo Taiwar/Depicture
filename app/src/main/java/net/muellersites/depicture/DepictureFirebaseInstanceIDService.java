@@ -1,5 +1,8 @@
 package net.muellersites.depicture;
 
+import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -11,6 +14,7 @@ import net.muellersites.depicture.Tasks.UploadInstanceIDTask;
 public class DepictureFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "Dev";
+    public static final String INTENT_FILTER = "INTENT_FILTER";
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -39,7 +43,17 @@ public class DepictureFirebaseInstanceIDService extends FirebaseInstanceIdServic
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
-        new UploadInstanceIDTask("https://muellersites.net/api/set_player_instance_id/").execute(token);
+    private void sendRegistrationToServer(final String token) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(INTENT_FILTER);
+                intent.putExtra("status", String.valueOf("token_update"));
+                intent.putExtra("msg", token);
+                sendBroadcast(intent);
+
+            }
+        });
     }
 }
